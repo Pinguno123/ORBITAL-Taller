@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ORBITAL.Dominio.Enumeraciones
 {
-    internal enum RolUsuario
+    public enum RolUsuario
     {
         Administrador,
         Coordinador,

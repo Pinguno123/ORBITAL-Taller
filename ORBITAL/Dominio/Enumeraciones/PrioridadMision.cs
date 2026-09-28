@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ORBITAL.Dominio.Enumeraciones
 {
-    internal enum PrioridadMision
+    public enum PrioridadMision
     {
         Baja,
         Media,

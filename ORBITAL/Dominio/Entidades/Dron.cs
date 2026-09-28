@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ORBITAL.Dominio.Entidades
 {
-    internal class Dron : RecursoExploracion
+    public class Dron : RecursoExploracion
     {
         // Atributos
         private decimal autonomiaVuelo;

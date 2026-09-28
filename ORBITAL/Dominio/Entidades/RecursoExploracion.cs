@@ -1,4 +1,5 @@
 ﻿using ORBITAL.Dominio.Enumeraciones;
+using ORBITAL.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ORBITAL.Dominio.Entidades
 {
-    internal abstract class RecursoExploracion
+    public abstract class RecursoExploracion : IAsignable
     {
         // Atributos
         protected int id;

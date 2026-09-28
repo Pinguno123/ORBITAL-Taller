@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ORBITAL.Dominio.Enumeraciones
 {
-    internal enum EstadoMision
+    public enum EstadoMision
     {
         Planificada,
         EnEjecucion,

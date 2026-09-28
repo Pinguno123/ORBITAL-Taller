@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ORBITAL.Dominio.Entidades
 {
-    internal class Mision
+    public class Mision
     {
         // Atributos
         private int id;
