@@ -39,7 +39,7 @@ namespace ORBITAL
 
         private static void MostrarPantallaLogin()
         {
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("================================================================================");
             Console.WriteLine("        SISTEMA ORBITA CONTROL - CENTRO DE CONTROL DE MISIONES                 ");
@@ -121,7 +121,7 @@ namespace ORBITAL
         {
             Usuario actual = sesion.ObtenerUsuarioActual();
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("================================================================================");
             Console.WriteLine($"  ORBITA CONTROL | Usuario: {actual.NombreUsuario} | Rol: {actual.Rol} ");
@@ -473,7 +473,7 @@ namespace ORBITAL
 
         private static void ListarMisiones()
         {
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== LISTADO DE MISIONES REGISTRADAS ===");
             Console.ResetColor();
@@ -531,7 +531,7 @@ namespace ORBITAL
                 return;
             }
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== CREAR NUEVA MISIÓN ===");
             Console.ResetColor();
@@ -591,7 +591,7 @@ namespace ORBITAL
                 return;
             }
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== MODIFICAR DATOS DE UNA MISIÓN ===");
             Console.ResetColor();
@@ -667,7 +667,7 @@ namespace ORBITAL
                 return;
             }
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== ASIGNAR RECURSO A MISIÓN ===");
             Console.ResetColor();
@@ -777,7 +777,7 @@ namespace ORBITAL
                 return;
             }
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== RETIRAR RECURSO DE MISIÓN ===");
             Console.ResetColor();
@@ -845,7 +845,7 @@ namespace ORBITAL
                 return;
             }
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== INICIAR MISIÓN - PROTOCOLO DE SEGURIDAD ORBITA ===");
             Console.ResetColor();
@@ -905,7 +905,7 @@ namespace ORBITAL
                 return;
             }
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== FINALIZAR MISIÓN ===");
             Console.ResetColor();
@@ -959,7 +959,7 @@ namespace ORBITAL
                 return;
             }
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== CANCELAR MISIÓN ===");
             Console.ResetColor();
@@ -1010,7 +1010,7 @@ namespace ORBITAL
 
         private static void CalcularCostoMision()
         {
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== CÁLCULO POLIMÓRFICO DE COSTO ESTIMADO DE MISIÓN ===");
             Console.ResetColor();
@@ -1072,7 +1072,7 @@ namespace ORBITAL
 
         private static void ListarRecursos(bool soloDisponibles)
         {
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(soloDisponibles ? "=== RECURSOS DISPONIBLES ===" : "=== TODOS LOS RECURSOS DE EXPLORACIÓN ===");
             Console.ResetColor();
@@ -1114,7 +1114,7 @@ namespace ORBITAL
                 return;
             }
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== REGISTRAR NUEVO RECURSO DE EXPLORACIÓN ===");
             Console.ResetColor();
@@ -1198,7 +1198,7 @@ namespace ORBITAL
                 return;
             }
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== MODIFICAR DATOS DE UN RECURSO DE EXPLORACIÓN ===");
             Console.ResetColor();
@@ -1270,7 +1270,7 @@ namespace ORBITAL
                 return;
             }
 
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== CAMBIAR ESTADO DE RECURSO ===");
             Console.ResetColor();
@@ -1362,7 +1362,7 @@ namespace ORBITAL
 
             while (true)
             {
-                Console.Clear();
+                LimpiarConsola();
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("=== GESTIÓN DE USUARIOS DEL SISTEMA ===");
                 Console.ResetColor();
@@ -1396,7 +1396,7 @@ namespace ORBITAL
 
         private static void ListarUsuarios()
         {
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== USUARIOS REGISTRADOS EN EL SISTEMA ===");
             Console.ResetColor();
@@ -1428,7 +1428,7 @@ namespace ORBITAL
 
         private static void RegistrarNuevoUsuario()
         {
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== REGISTRAR NUEVO USUARIO ===");
             Console.ResetColor();
@@ -1469,7 +1469,7 @@ namespace ORBITAL
 
         private static void CambiarEstadoUsuario()
         {
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== CAMBIAR ESTADO DE USUARIO ===");
             Console.ResetColor();
@@ -1540,7 +1540,7 @@ namespace ORBITAL
 
         private static void ListarAsignacionesActivas()
         {
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== ASIGNACIONES ACTIVAS (VISTA DE AUDITORÍA) ===");
             Console.ResetColor();
@@ -1576,7 +1576,7 @@ namespace ORBITAL
 
         private static void MostrarPanelDeControl()
         {
-            Console.Clear();
+            LimpiarConsola();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("================================================================================");
             Console.WriteLine("                    PANEL DE CONTROL ORBITA - ESTADÍSTICAS                     ");
@@ -1648,7 +1648,20 @@ namespace ORBITAL
         private static void Pausar()
         {
             Console.WriteLine("\nPresione cualquier tecla para continuar...");
+            while (Console.KeyAvailable) { Console.ReadKey(true); }
             Console.ReadKey(true);
+            while (Console.KeyAvailable) { Console.ReadKey(true); }
+        }
+
+        private static void LimpiarConsola()
+        {
+            try
+            {
+                Console.Clear();
+                Console.Write("\x1b[3J\x1b[H\x1b[2J");
+            }
+            catch
+            {}
         }
     }
 }

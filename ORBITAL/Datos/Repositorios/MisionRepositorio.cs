@@ -21,6 +21,9 @@ namespace ORBITAL.Datos.Repositorios
                     .Include(m => m.usuario)
                     .Include(m => m.asignacion_recurso)
                     .AsNoTracking()
+                    .ToList()
+                    .GroupBy(m => m.id)
+                    .Select(g => g.First())
                     .ToList();
 
                 var lista = new List<Mision>();
@@ -70,6 +73,9 @@ namespace ORBITAL.Datos.Repositorios
                     .Include(m => m.asignacion_recurso)
                     .AsNoTracking()
                     .Where(m => m.estado == estadoByte)
+                    .ToList()
+                    .GroupBy(m => m.id)
+                    .Select(g => g.First())
                     .ToList();
 
                 var lista = new List<Mision>();
@@ -329,7 +335,10 @@ namespace ORBITAL.Datos.Repositorios
                         var rec = RecursoRepositorio.MapearDetalleADominio(det);
                         if (rec != null)
                         {
-                            dominioMision.Recursos.Add(rec);
+                            if (!dominioMision.Recursos.Any(r => r.Id == rec.Id))
+                            {
+                                dominioMision.Recursos.Add(rec);
+                            }
                             dominioMision.Asignaciones.Add(new AsignacionRecurso(
                                 asig.id,
                                 dominioMision,
