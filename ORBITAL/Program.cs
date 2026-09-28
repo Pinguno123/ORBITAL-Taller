@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace ORBITAL
 {
@@ -51,16 +52,20 @@ namespace ORBITAL
             Console.WriteLine("  * Auditor       : auditor_orbita     / Audit123");
             Console.WriteLine("--------------------------------------------------------------------------------");
 
-            Console.Write("\nIngrese nombre de usuario (o '0' para salir): ");
-            string usuario = Console.ReadLine()?.Trim();
+            Console.Write("\nIngrese nombre de usuario (o '0' / ESC para salir): ");
+            string usuario = LeerEntrada();
 
-            if (usuario == "0")
+            if (usuario == null || usuario == "0")
             {
                 Environment.Exit(0);
             }
 
-            Console.Write("Ingrese contraseña: ");
+            Console.Write("Ingrese contraseña (o ESC para volver): ");
             string contrasena = LeerContrasenaOculta();
+            if (contrasena == null)
+            {
+                return;
+            }
 
             try
             {
@@ -98,6 +103,11 @@ namespace ORBITAL
             do
             {
                 key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Escape)
+                {
+                    Console.WriteLine();
+                    return null;
+                }
                 if (key.Key != ConsoleKey.Backspace && key.Key != ConsoleKey.Enter)
                 {
                     pass += key.KeyChar;
@@ -163,10 +173,15 @@ namespace ORBITAL
             Console.WriteLine("----------------------------------------------------------------");
             Console.WriteLine("15. Gestión de usuarios (Consultar, Registrar, Cambiar Estado)");
             Console.WriteLine("16. Panel de Control ORBITA (Estadísticas)");
-            Console.WriteLine("0.  Cerrar sesión");
-            Console.Write("\nSeleccione una opción: ");
+            Console.WriteLine("0.  Cerrar sesión (o presione ESC)");
 
-            string opcion = Console.ReadLine()?.Trim();
+            string opcion = LeerEntrada("\nSeleccione una opción: ");
+            if (opcion == null || opcion == "0")
+            {
+                sesion.CerrarSesion();
+                return;
+            }
+
             switch (opcion)
             {
                 case "1": ListarMisiones(); break;
@@ -185,7 +200,6 @@ namespace ORBITAL
                 case "14": CambiarEstadoRecurso(); break;
                 case "15": GestionUsuarios(); break;
                 case "16": MostrarPanelDeControl(); break;
-                case "0": sesion.CerrarSesion(); break;
                 default:
                     Console.WriteLine("Opción no válida.");
                     Pausar();
@@ -207,10 +221,15 @@ namespace ORBITAL
             Console.WriteLine("----------------------------------------------------------------");
             Console.WriteLine("9.  Consultar recursos disponibles");
             Console.WriteLine("10. Panel de Control ORBITA");
-            Console.WriteLine("0.  Cerrar sesión");
-            Console.Write("\nSeleccione una opción: ");
+            Console.WriteLine("0.  Cerrar sesión (o presione ESC)");
 
-            string opcion = Console.ReadLine()?.Trim();
+            string opcion = LeerEntrada("\nSeleccione una opción: ");
+            if (opcion == null || opcion == "0")
+            {
+                sesion.CerrarSesion();
+                return;
+            }
+
             switch (opcion)
             {
                 case "1": ListarMisiones(); break;
@@ -223,7 +242,6 @@ namespace ORBITAL
                 case "8": CalcularCostoMision(); break;
                 case "9": ListarRecursos(soloDisponibles: true); break;
                 case "10": MostrarPanelDeControl(); break;
-                case "0": sesion.CerrarSesion(); break;
                 default:
                     Console.WriteLine("Opción no válida.");
                     Pausar();
@@ -239,10 +257,15 @@ namespace ORBITAL
             Console.WriteLine("3. Consultar recursos disponibles");
             Console.WriteLine("4. Consultar asignaciones activas (Vista auditoría)");
             Console.WriteLine("5. Panel de Control ORBITA");
-            Console.WriteLine("0. Cerrar sesión");
-            Console.Write("\nSeleccione una opción: ");
+            Console.WriteLine("0. Cerrar sesión (o presione ESC)");
 
-            string opcion = Console.ReadLine()?.Trim();
+            string opcion = LeerEntrada("\nSeleccione una opción: ");
+            if (opcion == null || opcion == "0")
+            {
+                sesion.CerrarSesion();
+                return;
+            }
+
             switch (opcion)
             {
                 case "1": ListarMisiones(); break;
@@ -250,7 +273,6 @@ namespace ORBITAL
                 case "3": ListarRecursos(soloDisponibles: true); break;
                 case "4": ListarAsignacionesActivas(); break;
                 case "5": MostrarPanelDeControl(); break;
-                case "0": sesion.CerrarSesion(); break;
                 default:
                     Console.WriteLine("Opción no válida.");
                     Pausar();
@@ -262,12 +284,48 @@ namespace ORBITAL
 
         #region Métodos Auxiliares de Validación y Lectura Robusta
 
+        private static string LeerEntrada(string prompt = "")
+        {
+            if (!string.IsNullOrEmpty(prompt))
+                Console.Write(prompt);
+
+            StringBuilder sb = new StringBuilder();
+            while (true)
+            {
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Escape)
+                {
+                    Console.WriteLine();
+                    return null;
+                }
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    Console.WriteLine();
+                    return sb.ToString().Trim();
+                }
+                if (key.Key == ConsoleKey.Backspace)
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Length--;
+                        Console.Write("\b \b");
+                    }
+                }
+                else if (!char.IsControl(key.KeyChar))
+                {
+                    sb.Append(key.KeyChar);
+                    Console.Write(key.KeyChar);
+                }
+            }
+        }
+
         private static string LeerTextoObligatorio(string prompt, int maxLongitud = 100)
         {
             while (true)
             {
-                Console.Write(prompt);
-                string entrada = Console.ReadLine()?.Trim();
+                string entrada = LeerEntrada(prompt);
+                if (entrada == null)
+                    throw new OperationCanceledException();
 
                 if (string.IsNullOrWhiteSpace(entrada))
                 {
@@ -293,8 +351,9 @@ namespace ORBITAL
         {
             while (true)
             {
-                Console.Write($"{prompt} [Actual: {valorActual}] (Enter para conservar): ");
-                string entrada = Console.ReadLine()?.Trim();
+                string entrada = LeerEntrada($"{prompt} [Actual: {valorActual}] (Enter para conservar, ESC para cancelar): ");
+                if (entrada == null)
+                    throw new OperationCanceledException();
 
                 if (string.IsNullOrEmpty(entrada))
                 {
@@ -317,8 +376,9 @@ namespace ORBITAL
         {
             while (true)
             {
-                Console.Write(prompt);
-                string entrada = Console.ReadLine()?.Trim();
+                string entrada = LeerEntrada(prompt);
+                if (entrada == null)
+                    throw new OperationCanceledException();
 
                 if (string.IsNullOrEmpty(entrada))
                 {
@@ -352,8 +412,9 @@ namespace ORBITAL
         {
             while (true)
             {
-                Console.Write(prompt);
-                string entrada = Console.ReadLine()?.Trim();
+                string entrada = LeerEntrada(prompt);
+                if (entrada == null)
+                    throw new OperationCanceledException();
 
                 if (int.TryParse(entrada, out int resultado))
                 {
@@ -377,8 +438,9 @@ namespace ORBITAL
         {
             while (true)
             {
-                Console.Write($"{prompt} (YYYY-MM-DD): ");
-                string entrada = Console.ReadLine()?.Trim();
+                string entrada = LeerEntrada($"{prompt} (YYYY-MM-DD): ");
+                if (entrada == null)
+                    throw new OperationCanceledException();
 
                 if (DateTime.TryParseExact(entrada, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fecha))
                 {
@@ -402,14 +464,16 @@ namespace ORBITAL
         {
             while (true)
             {
-                Console.WriteLine("Prioridad de la misión:");
+                Console.WriteLine("Prioridad de la misión (o presione ESC para cancelar):");
                 Console.WriteLine("  0. Baja");
                 Console.WriteLine("  1. Media");
                 Console.WriteLine("  2. Alta");
-                Console.Write("Seleccione prioridad (0-2): ");
 
-                string entrada = Console.ReadLine()?.Trim().ToLower();
+                string entrada = LeerEntrada("Seleccione prioridad (0-2): ");
+                if (entrada == null)
+                    throw new OperationCanceledException();
 
+                entrada = entrada.ToLower();
                 switch (entrada)
                 {
                     case "0":
@@ -434,13 +498,15 @@ namespace ORBITAL
         {
             while (true)
             {
-                Console.WriteLine("Roles disponibles:");
+                Console.WriteLine("Roles disponibles (o presione ESC para cancelar):");
                 Console.WriteLine("  0. Administrador");
                 Console.WriteLine("  1. Coordinador");
                 Console.WriteLine("  2. Auditor");
-                Console.Write("Seleccione rol (0-2): ");
 
-                string entrada = Console.ReadLine()?.Trim();
+                string entrada = LeerEntrada("Seleccione rol (0-2): ");
+                if (entrada == null)
+                    throw new OperationCanceledException();
+
                 switch (entrada)
                 {
                     case "0": return RolUsuario.Administrador;
@@ -459,8 +525,11 @@ namespace ORBITAL
         {
             while (true)
             {
-                Console.Write($"{prompt} (s/n): ");
-                string respuesta = Console.ReadLine()?.Trim().ToLower();
+                string respuesta = LeerEntrada($"{prompt} (s/n, o presione ESC para cancelar): ");
+                if (respuesta == null)
+                    throw new OperationCanceledException();
+
+                respuesta = respuesta.ToLower();
                 if (respuesta == "s" || respuesta == "si") return true;
                 if (respuesta == "n" || respuesta == "no") return false;
                 Console.WriteLine("Responda 's' para sí o 'n' para no.");
@@ -567,6 +636,10 @@ namespace ORBITAL
                 Console.WriteLine($"\n[ÉXITO] Misión '{nuevaMision.Codigo}' registrada correctamente en la base de datos.");
                 Console.ResetColor();
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             catch (MisionInvalidaException mex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -648,6 +721,10 @@ namespace ORBITAL
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"\n[ÉXITO] Misión '{mision.Codigo}' actualizada exitosamente.");
                 Console.ResetColor();
+            }
+            catch (OperationCanceledException)
+            {
+                return;
             }
             catch (Exception ex)
             {
@@ -753,6 +830,10 @@ namespace ORBITAL
                 Console.WriteLine($"Costo de operación estimado para este recurso: ${costoCalculado:N2}");
                 Console.ResetColor();
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             catch (RecursoNoDisponibleException rex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -827,6 +908,10 @@ namespace ORBITAL
                 Console.WriteLine($"\n[ÉXITO] Recurso '{recurso.Codigo}' retirado de la misión y devuelto al estado Disponible.");
                 Console.ResetColor();
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -874,6 +959,10 @@ namespace ORBITAL
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"\n[ÉXITO] Protocolo de Seguridad verificado al 100%. La misión '{mision.Codigo}' ha iniciado su ejecución.");
                 Console.ResetColor();
+            }
+            catch (OperationCanceledException)
+            {
+                return;
             }
             catch (MisionInvalidaException mex)
             {
@@ -941,6 +1030,10 @@ namespace ORBITAL
                 Console.WriteLine($"\n[ÉXITO] Misión '{mision.Codigo}' finalizada con éxito. Todos sus recursos asignados han sido liberados y están Disponibles.");
                 Console.ResetColor();
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -1001,6 +1094,10 @@ namespace ORBITAL
                 Console.WriteLine($"\n[ÉXITO] Misión '{mision.Codigo}' cancelada y sus recursos liberados.");
                 Console.ResetColor();
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -1059,6 +1156,10 @@ namespace ORBITAL
                 Console.WriteLine($" COSTO TOTAL ESTIMADO DE LA MISIÓN: ${total:N2}");
                 Console.WriteLine($"==================================================");
                 Console.ResetColor();
+            }
+            catch (OperationCanceledException)
+            {
+                return;
             }
             catch (Exception ex)
             {
@@ -1132,8 +1233,11 @@ namespace ORBITAL
                     Console.WriteLine("  1. Dron de Exploración");
                     Console.WriteLine("  2. Rover Terrestre");
                     Console.WriteLine("  3. Estación de Sensores");
-                    Console.Write("Tipo (1-3): ");
-                    tipo = Console.ReadLine()?.Trim();
+                    Console.WriteLine("  0. Cancelar / Volver (o presione ESC)");
+                    tipo = LeerEntrada("Tipo (1-3 o 0/ESC): ");
+
+                    if (tipo == null || tipo == "0")
+                        return;
 
                     if (tipo == "1" || tipo == "2" || tipo == "3")
                         break;
@@ -1180,6 +1284,10 @@ namespace ORBITAL
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"\n[ÉXITO] Recurso '{nuevo.Codigo}' ({nuevo.Modelo}) registrado exitosamente en la base de datos.");
                 Console.ResetColor();
+            }
+            catch (OperationCanceledException)
+            {
+                return;
             }
             catch (Exception ex)
             {
@@ -1253,6 +1361,10 @@ namespace ORBITAL
                 Console.WriteLine($"\n[ÉXITO] Recurso '{recurso.Codigo}' modificado exitosamente.");
                 Console.ResetColor();
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -1296,13 +1408,16 @@ namespace ORBITAL
                 Console.WriteLine("\nEstados permitidos para cambio manual:");
                 Console.WriteLine("  0. Disponible");
                 Console.WriteLine("  2. Mantenimiento");
+                Console.WriteLine("  (Presione ESC para cancelar)");
                 Console.WriteLine("  (Nota: 'Asignado' solo es asignado automáticamente por el sistema al vincular el recurso a una misión)");
 
                 EstadoRecurso nuevoEstado;
                 while (true)
                 {
-                    Console.Write("\nSeleccione nuevo estado (0 o 2): ");
-                    string entrada = Console.ReadLine()?.Trim();
+                    string entrada = LeerEntrada("\nSeleccione nuevo estado (0 para Disponible, 2 para Mantenimiento, o ESC para cancelar): ");
+
+                    if (entrada == null)
+                        return;
 
                     if (entrada == "0")
                     {
@@ -1323,7 +1438,7 @@ namespace ORBITAL
                     }
 
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("[ERROR] Opción inválida. Ingrese 0 para Disponible o 2 para Mantenimiento.");
+                    Console.WriteLine("[ERROR] Opción inválida. Ingrese 0 para Disponible, 2 para Mantenimiento, o presione ESC para cancelar.");
                     Console.ResetColor();
                 }
 
@@ -1332,6 +1447,10 @@ namespace ORBITAL
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"\n[ÉXITO] Estado del recurso '{recurso.Codigo}' actualizado a: {nuevoEstado}");
                 Console.ResetColor();
+            }
+            catch (OperationCanceledException)
+            {
+                return;
             }
             catch (InvalidOperationException ioex)
             {
@@ -1373,10 +1492,14 @@ namespace ORBITAL
                 Console.WriteLine("1. Consultar todos los usuarios");
                 Console.WriteLine("2. Registrar nuevo usuario");
                 Console.WriteLine("3. Cambiar estado de un usuario (Activar / Desactivar)");
-                Console.WriteLine("0. Volver al menú principal");
-                Console.Write("\nSeleccione una opción: ");
+                Console.WriteLine("0. Volver al menú principal (o presione ESC)");
 
-                string op = Console.ReadLine()?.Trim();
+                string op = LeerEntrada("\nSeleccione una opción: ");
+                if (op == null || op == "0")
+                {
+                    return;
+                }
+
                 switch (op)
                 {
                     case "1":
@@ -1388,8 +1511,6 @@ namespace ORBITAL
                     case "3":
                         CambiarEstadoUsuario();
                         break;
-                    case "0":
-                        return;
                     default:
                         Console.WriteLine("Opción no válida.");
                         Pausar();
@@ -1461,6 +1582,10 @@ namespace ORBITAL
                 Console.WriteLine($"\n[ÉXITO] Usuario '{nuevoUsuario.NombreUsuario}' registrado como {nuevoUsuario.Rol} con estado Activo.");
                 Console.ResetColor();
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -1511,15 +1636,18 @@ namespace ORBITAL
                 Console.WriteLine("Estados:");
                 Console.WriteLine("  0. Activo");
                 Console.WriteLine("  1. Inactivo");
+                Console.WriteLine("  (Presione ESC para cancelar)");
 
                 EstadoUsuario nuevoEstado;
                 while (true)
                 {
-                    Console.Write("Seleccione nuevo estado (0 o 1): ");
-                    string op = Console.ReadLine()?.Trim();
+                    string op = LeerEntrada("Seleccione nuevo estado (0 o 1, o ESC para cancelar): ");
+                    if (op == null)
+                        return;
+
                     if (op == "0") { nuevoEstado = EstadoUsuario.Activo; break; }
                     if (op == "1") { nuevoEstado = EstadoUsuario.Inactivo; break; }
-                    Console.WriteLine("Opción inválida. Ingrese 0 o 1.");
+                    Console.WriteLine("Opción inválida. Ingrese 0 o 1, o presione ESC para cancelar.");
                 }
 
                 usuarioRepo.CambiarEstado(usuario.Id, nuevoEstado);
@@ -1527,6 +1655,10 @@ namespace ORBITAL
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"\n[ÉXITO] Estado del usuario '{usuario.NombreUsuario}' cambiado a: {nuevoEstado}");
                 Console.ResetColor();
+            }
+            catch (OperationCanceledException)
+            {
+                return;
             }
             catch (Exception ex)
             {
@@ -1616,10 +1748,9 @@ namespace ORBITAL
                 Console.WriteLine($"  * Total de recursos registrados          : {recursos.Count}");
 
                 Console.WriteLine("\n--------------------------------------------------------------------------------");
-                Console.Write("¿Desea consultar el costo estimado total de una misión específica? (s/n): ");
-                string respuesta = Console.ReadLine()?.Trim().ToLower();
+                string respuesta = LeerEntrada("¿Desea consultar el costo estimado total de una misión específica? (s/n, o presione ESC para volver): ");
 
-                if (respuesta == "s" || respuesta == "si")
+                if (respuesta != null && (respuesta.Equals("s", StringComparison.OrdinalIgnoreCase) || respuesta.Equals("si", StringComparison.OrdinalIgnoreCase)))
                 {
                     string cod = LeerTextoObligatorio("Ingrese código de la misión: ", 20);
                     var m = misiones.FirstOrDefault(x => x.Codigo.Equals(cod, StringComparison.OrdinalIgnoreCase));
@@ -1637,6 +1768,10 @@ namespace ORBITAL
                     }
                 }
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -1651,7 +1786,7 @@ namespace ORBITAL
 
         private static void Pausar()
         {
-            Console.WriteLine("\nPresione cualquier tecla para continuar...");
+            Console.WriteLine("\nPresione cualquier tecla para continuar (o presione ESC para volver)...");
             while (Console.KeyAvailable) { Console.ReadKey(true); }
             Console.ReadKey(true);
             while (Console.KeyAvailable) { Console.ReadKey(true); }
