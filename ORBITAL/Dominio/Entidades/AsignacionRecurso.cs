@@ -15,6 +15,7 @@ namespace ORBITAL.Dominio.Entidades
         private DateTime fechaAsignacion;
         private DateTime? fechaLiberacion;
         private bool activa;
+        private decimal cantidadOperacion;
 
         // Getters y Setters
         public int Id { get => id; set => id = value; }
@@ -23,9 +24,15 @@ namespace ORBITAL.Dominio.Entidades
         public DateTime FechaAsignacion { get => fechaAsignacion; set => fechaAsignacion = value; }
         public DateTime? FechaLiberacion { get => fechaLiberacion; set => fechaLiberacion = value; }
         public bool Activa { get => activa; set => activa = value; }
+        public decimal CantidadOperacion { get => cantidadOperacion; set => cantidadOperacion = value; }
 
-        // Constructor
+        // Constructores
         public AsignacionRecurso(Mision mision, RecursoExploracion recurso)
+            : this(mision, recurso, 1)
+        {
+        }
+
+        public AsignacionRecurso(Mision mision, RecursoExploracion recurso, decimal cantidadOperacion)
         {
             if (mision == null)
                 throw new ArgumentNullException(nameof(mision));
@@ -35,6 +42,7 @@ namespace ORBITAL.Dominio.Entidades
 
             this.mision = mision;
             this.recurso = recurso;
+            this.cantidadOperacion = cantidadOperacion > 0 ? cantidadOperacion : 1;
             this.fechaAsignacion = DateTime.Now;
             this.fechaLiberacion = null;
             this.activa = true;
@@ -43,7 +51,7 @@ namespace ORBITAL.Dominio.Entidades
             recurso.Asignar(mision);
         }
 
-        public AsignacionRecurso(int id, Mision mision, RecursoExploracion recurso, DateTime fechaAsignacion, DateTime? fechaLiberacion, bool activa)
+        public AsignacionRecurso(int id, Mision mision, RecursoExploracion recurso, DateTime fechaAsignacion, DateTime? fechaLiberacion, bool activa, decimal cantidadOperacion = 1)
         {
             this.id = id;
             this.mision = mision;
@@ -51,9 +59,18 @@ namespace ORBITAL.Dominio.Entidades
             this.fechaAsignacion = fechaAsignacion;
             this.fechaLiberacion = fechaLiberacion;
             this.activa = activa;
+            this.cantidadOperacion = cantidadOperacion > 0 ? cantidadOperacion : 1;
         }
 
         // Métodos
+        public decimal CalcularCosto()
+        {
+            if (this.recurso == null)
+                return 0;
+
+            return this.recurso.CalcularCostoOperacion(this.cantidadOperacion);
+        }
+
         public void Liberar()
         {
             if (!this.activa)
@@ -74,7 +91,7 @@ namespace ORBITAL.Dominio.Entidades
 
         public override string ToString()
         {
-            return Mision.Codigo + " - " + Recurso.Codigo + " - Activa: " + Activa;
+            return $"{Mision.Codigo} - {Recurso.Codigo} (Uso: {cantidadOperacion}) - Activa: {activa}";
         }
     }
 }

@@ -53,14 +53,31 @@ namespace ORBITAL.Datos.Repositorios
 
         public void CambiarEstado(int recursoId, EstadoRecurso nuevoEstado)
         {
+            if (nuevoEstado == EstadoRecurso.Asignado)
+            {
+                throw new InvalidOperationException("El estado 'Asignado' no puede asignarse manualmente. Es gestionado automáticamente por el sistema al asignar el recurso a una misión.");
+            }
+
             using (var db = new orbita_controlEntities())
             {
                 var efRecurso = db.recurso_exploracion.Find(recursoId);
-                if (efRecurso != null)
+                if (efRecurso == null)
+                    throw new InvalidOperationException($"No se encontró el recurso con Id {recursoId}.");
+
+                if (efRecurso.estado == (byte)EstadoRecurso.Asignado)
                 {
-                    efRecurso.estado = (byte)nuevoEstado;
-                    db.SaveChanges();
+                    bool tieneMisionActiva = db.asignacion_recurso
+                        .Any(a => a.recurso_id == recursoId && a.activa &&
+                                  (a.mision.estado == (byte)EstadoMision.Planificada || a.mision.estado == (byte)EstadoMision.EnEjecucion));
+
+                    if (tieneMisionActiva)
+                    {
+                        throw new InvalidOperationException($"El recurso '{efRecurso.codigo}' se encuentra asignado a una misión activa o en ejecución. Debe ser liberado o retirado de la misión antes de cambiar su estado manualmente.");
+                    }
                 }
+
+                efRecurso.estado = (byte)nuevoEstado;
+                db.SaveChanges();
             }
         }
 

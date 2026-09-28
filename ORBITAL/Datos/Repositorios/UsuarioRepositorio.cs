@@ -75,6 +75,20 @@ namespace ORBITAL.Datos.Repositorios
             }
         }
 
+        public bool CambiarEstado(int usuarioId, EstadoUsuario nuevoEstado)
+        {
+            using (var db = new orbita_controlEntities())
+            {
+                var efUser = db.usuario.Find(usuarioId);
+                if (efUser == null)
+                    return false;
+
+                efUser.estado = (byte)nuevoEstado;
+                db.SaveChanges();
+                return true;
+            }
+        }
+
         public static Usuario MapearADominio(usuario efUser)
         {
             if (efUser == null)

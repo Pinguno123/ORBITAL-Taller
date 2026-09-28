@@ -21,6 +21,7 @@ namespace ORBITAL.Dominio.Entidades
         private EstadoMision estado;
         private Usuario responsable;
         private List<RecursoExploracion> recursos = new List<RecursoExploracion>();
+        private List<AsignacionRecurso> asignaciones = new List<AsignacionRecurso>();
 
         // Getters y Setters
         public int Id { get => id; set => id = value; }
@@ -33,6 +34,7 @@ namespace ORBITAL.Dominio.Entidades
         public EstadoMision Estado { get => estado; set => estado = value; }
         public Usuario Responsable { get => responsable; set => responsable = value; }
         public List<RecursoExploracion> Recursos { get => recursos; set => recursos = value ?? new List<RecursoExploracion>(); }
+        public List<AsignacionRecurso> Asignaciones { get => asignaciones; set => asignaciones = value ?? new List<AsignacionRecurso>(); }
 
         // Constructores públicos
         public Mision(string codigo, string nombre, Usuario responsable)
@@ -42,6 +44,7 @@ namespace ORBITAL.Dominio.Entidades
             this.responsable = responsable;
             this.estado = EstadoMision.Planificada; // Estado inicial por defecto
             this.recursos = new List<RecursoExploracion>();
+            this.asignaciones = new List<AsignacionRecurso>();
         }
 
         public Mision(string codigo, string nombre, string descripcion, DateTime fechaInicio, DateTime fechaFin, PrioridadMision prioridad, Usuario responsable)
@@ -55,6 +58,7 @@ namespace ORBITAL.Dominio.Entidades
             this.responsable = responsable;
             this.estado = EstadoMision.Planificada;
             this.recursos = new List<RecursoExploracion>();
+            this.asignaciones = new List<AsignacionRecurso>();
         }
 
         public Mision(int id, string codigo, string nombre, string descripcion, DateTime fechaInicio, DateTime fechaFinEstimada, PrioridadMision prioridad, EstadoMision estado, Usuario responsable)
@@ -69,10 +73,16 @@ namespace ORBITAL.Dominio.Entidades
             this.estado = estado;
             this.responsable = responsable;
             this.recursos = new List<RecursoExploracion>();
+            this.asignaciones = new List<AsignacionRecurso>();
         }
 
         // Métodos públicos
         public void AsignarRecurso(RecursoExploracion recurso)
+        {
+            AsignarRecurso(recurso, 1);
+        }
+
+        public void AsignarRecurso(RecursoExploracion recurso, decimal cantidadOperacion)
         {
             if (recurso == null)
             {
@@ -87,7 +97,8 @@ namespace ORBITAL.Dominio.Entidades
             if (!recursos.Contains(recurso))
             {
                 recursos.Add(recurso);
-                recurso.Asignar(this);
+                var asignacion = new AsignacionRecurso(this, recurso, cantidadOperacion);
+                asignaciones.Add(asignacion);
             }
         }
 
@@ -96,7 +107,15 @@ namespace ORBITAL.Dominio.Entidades
             if (recurso != null && recursos.Contains(recurso))
             {
                 recursos.Remove(recurso);
-                recurso.Liberar();
+                var asigActiva = asignaciones.FirstOrDefault(a => a.Recurso != null && a.Recurso.Codigo == recurso.Codigo && a.EstaActiva());
+                if (asigActiva != null)
+                {
+                    asigActiva.Liberar();
+                }
+                else
+                {
+                    recurso.Liberar();
+                }
             }
         }
 
@@ -129,14 +148,22 @@ namespace ORBITAL.Dominio.Entidades
 
         public void Finalizar()
         {
-            if (this.estado != EstadoMision.EnEjecucion && this.estado != EstadoMision.Planificada)
+            if (this.estado != EstadoMision.EnEjecucion)
             {
-                throw new MisionInvalidaException($"No se puede finalizar la misión {codigo} en su estado actual ({estado}).");
+                throw new MisionInvalidaException($"Únicamente las misiones en estado EnEjecución pueden ser finalizadas. Estado actual de {codigo}: {estado}.");
             }
 
             this.estado = EstadoMision.Finalizada;
 
             // Liberar los recursos utilizados por la misión
+            foreach (var asig in asignaciones)
+            {
+                if (asig.EstaActiva())
+                {
+                    asig.Liberar();
+                }
+            }
+
             foreach (var recurso in recursos)
             {
                 recurso.Liberar();
@@ -153,6 +180,14 @@ namespace ORBITAL.Dominio.Entidades
             this.estado = EstadoMision.Cancelada;
 
             // Liberar los recursos
+            foreach (var asig in asignaciones)
+            {
+                if (asig.EstaActiva())
+                {
+                    asig.Liberar();
+                }
+            }
+
             foreach (var recurso in recursos)
             {
                 recurso.Liberar();
@@ -171,9 +206,9 @@ namespace ORBITAL.Dominio.Entidades
             if (string.IsNullOrWhiteSpace(descripcion))
                 throw new MisionInvalidaException("Protocolo de seguridad ORBITA: La descripción de la misión es obligatoria.");
 
-            // 2. Fecha final >= fecha inicial
-            if (fechaFinEstimada < fechaInicio)
-                throw new MisionInvalidaException("Protocolo de seguridad ORBITA: La fecha de finalización estimada no puede ser anterior a la fecha de inicio.");
+            // 2. Fecha final > fecha inicial
+            if (fechaFinEstimada <= fechaInicio)
+                throw new MisionInvalidaException("Protocolo de seguridad ORBITA: La fecha de finalización estimada debe ser posterior a la fecha de inicio.");
 
             // 3. Responsable activo
             if (responsable == null)
@@ -200,6 +235,21 @@ namespace ORBITAL.Dominio.Entidades
 
         public decimal CalcularCostoEstimado()
         {
+            // Polimorfismo mediante AsignacionRecurso con la unidad correcta de uso
+            if (asignaciones != null && asignaciones.Count > 0)
+            {
+                decimal total = 0;
+                foreach (var asig in asignaciones)
+                {
+                    if (asig.EstaActiva() && asig.Recurso != null)
+                    {
+                        total += asig.CalcularCosto();
+                    }
+                }
+                if (total > 0)
+                    return total;
+            }
+
             decimal duracionDias = (decimal)Math.Max(1, Math.Ceiling((fechaFinEstimada - fechaInicio).TotalDays));
             return CalcularCostoEstimado(duracionDias);
         }

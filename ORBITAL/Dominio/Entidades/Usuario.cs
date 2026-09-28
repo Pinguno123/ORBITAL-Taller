@@ -63,6 +63,11 @@ namespace ORBITAL.Dominio.Entidades
             return this.estado == EstadoUsuario.Activo;
         }
 
+        public void CambiarEstado(EstadoUsuario nuevoEstado)
+        {
+            this.estado = nuevoEstado;
+        }
+
         public override string ToString()
         {
             return $"{nombreUsuario} | Rol: {rol} | Estado: {estado}";

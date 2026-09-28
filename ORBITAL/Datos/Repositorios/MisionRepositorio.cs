@@ -157,20 +157,33 @@ namespace ORBITAL.Datos.Repositorios
             if (mision == null)
                 throw new ArgumentNullException(nameof(mision));
 
+            if (string.IsNullOrWhiteSpace(mision.Nombre))
+                throw new MisionInvalidaException("El nombre de la misión es obligatorio.");
+
+            if (string.IsNullOrWhiteSpace(mision.Descripcion))
+                throw new MisionInvalidaException("La descripción de la misión es obligatoria.");
+
+            if (mision.FechaFinEstimada < mision.FechaInicio)
+                throw new MisionInvalidaException("La fecha estimada de finalización no puede ser anterior a la fecha de inicio.");
+
             using (var db = new orbita_controlEntities())
             {
                 var efMision = db.mision.Find(mision.Id);
                 if (efMision == null)
                     throw new InvalidOperationException($"No se encontró la misión con Id {mision.Id}.");
 
+                if (efMision.estado == (byte)EstadoMision.Finalizada || efMision.estado == (byte)EstadoMision.Cancelada)
+                {
+                    throw new InvalidOperationException($"No se pueden modificar misiones en estado {(EstadoMision)efMision.estado}.");
+                }
+
                 efMision.nombre = mision.Nombre;
                 efMision.descripcion = mision.Descripcion;
                 efMision.fecha_inicio = mision.FechaInicio;
                 efMision.fecha_fin_estimada = mision.FechaFinEstimada;
                 efMision.prioridad = (byte)mision.Prioridad;
-                efMision.estado = (byte)mision.Estado;
 
-                if (mision.Responsable != null)
+                if (mision.Responsable != null && mision.Responsable.Id > 0)
                 {
                     efMision.responsable_id = mision.Responsable.Id;
                 }
@@ -184,17 +197,57 @@ namespace ORBITAL.Datos.Repositorios
             using (var db = new orbita_controlEntities())
             {
                 var efMision = db.mision
+                    .Include(m => m.usuario)
                     .Include(m => m.asignacion_recurso)
                     .FirstOrDefault(m => m.id == misionId);
 
                 if (efMision == null)
                     throw new InvalidOperationException($"No se encontró la misión con Id {misionId}.");
 
-                efMision.estado = (byte)nuevoEstado;
-
-                // Si la misión finaliza o se cancela, liberar recursos en la base de datos
-                if (nuevoEstado == EstadoMision.Finalizada || nuevoEstado == EstadoMision.Cancelada)
+                if (nuevoEstado == EstadoMision.EnEjecucion)
                 {
+                    // Validar protocolo de seguridad
+                    var dominioMision = MapearMisionConRecursos(db, efMision);
+                    dominioMision.ValidarProtocoloSeguridad();
+
+                    // Regla de seguridad: Ningún recurso asignado puede estar en otra misión activa / en ejecución
+                    var recursoIds = efMision.asignacion_recurso
+                        .Where(a => a.activa)
+                        .Select(a => a.recurso_id)
+                        .ToList();
+
+                    var conflicto = db.asignacion_recurso
+                        .Include(a => a.mision)
+                        .Include(a => a.recurso_exploracion)
+                        .FirstOrDefault(a => a.mision_id != misionId &&
+                                             a.activa &&
+                                             recursoIds.Contains(a.recurso_id) &&
+                                             a.mision.estado == (byte)EstadoMision.EnEjecucion);
+
+                    if (conflicto != null)
+                    {
+                        throw new InvalidOperationException($"Protocolo de seguridad ORBITA: El recurso '{conflicto.recurso_exploracion.codigo}' ya se encuentra asignado a otra misión en ejecución ('{conflicto.mision.codigo}').");
+                    }
+
+                    // Asegurar que los recursos asignados figuren como asignados
+                    foreach (var asig in efMision.asignacion_recurso.Where(a => a.activa))
+                    {
+                        var rec = db.recurso_exploracion.Find(asig.recurso_id);
+                        if (rec != null)
+                        {
+                            rec.estado = (byte)EstadoRecurso.Asignado;
+                        }
+                    }
+                }
+                else if (nuevoEstado == EstadoMision.Finalizada)
+                {
+                    // Restricción: Únicamente misiones EnEjecucion pueden finalizarse
+                    if (efMision.estado != (byte)EstadoMision.EnEjecucion)
+                    {
+                        throw new MisionInvalidaException($"Únicamente las misiones en estado 'EnEjecucion' pueden ser finalizadas. Estado actual de '{efMision.codigo}': {(EstadoMision)efMision.estado}.");
+                    }
+
+                    // Liberar recursos
                     var asignacionesActivas = efMision.asignacion_recurso.Where(a => a.activa).ToList();
                     DateTime ahora = DateTime.Now;
                     foreach (var asig in asignacionesActivas)
@@ -209,20 +262,30 @@ namespace ORBITAL.Datos.Repositorios
                         }
                     }
                 }
-                else if (nuevoEstado == EstadoMision.EnEjecucion)
+                else if (nuevoEstado == EstadoMision.Cancelada)
                 {
-                    // Asegurar que los recursos asignados figuren como asignados
+                    if (efMision.estado == (byte)EstadoMision.Finalizada)
+                    {
+                        throw new MisionInvalidaException("No se puede cancelar una misión que ya ha finalizado.");
+                    }
+
+                    // Liberar recursos
                     var asignacionesActivas = efMision.asignacion_recurso.Where(a => a.activa).ToList();
+                    DateTime ahora = DateTime.Now;
                     foreach (var asig in asignacionesActivas)
                     {
+                        asig.activa = false;
+                        asig.fecha_liberacion = ahora;
+
                         var rec = db.recurso_exploracion.Find(asig.recurso_id);
                         if (rec != null)
                         {
-                            rec.estado = (byte)EstadoRecurso.Asignado;
+                            rec.estado = (byte)EstadoRecurso.Disponible;
                         }
                     }
                 }
 
+                efMision.estado = (byte)nuevoEstado;
                 db.SaveChanges();
             }
         }
@@ -243,25 +306,40 @@ namespace ORBITAL.Datos.Repositorios
                 resp
             );
 
-            // Cargar recursos activos de la misión
-            var recursoIds = efM.asignacion_recurso
+            // Cargar recursos y asignaciones activos de la misión
+            var asignacionesActivas = efM.asignacion_recurso
                 .Where(a => a.activa)
-                .Select(a => a.recurso_id)
                 .ToList();
 
-            if (recursoIds.Count > 0)
+            if (asignacionesActivas.Count > 0)
             {
+                var recursoIds = asignacionesActivas.Select(a => a.recurso_id).ToList();
                 var detalles = db.vw_recurso_detalle
                     .AsNoTracking()
                     .Where(d => recursoIds.Contains(d.id))
                     .ToList();
 
-                foreach (var det in detalles)
+                decimal duracionDias = (decimal)Math.Max(1, Math.Ceiling((efM.fecha_fin_estimada - efM.fecha_inicio).TotalDays));
+
+                foreach (var asig in asignacionesActivas)
                 {
-                    var rec = RecursoRepositorio.MapearDetalleADominio(det);
-                    if (rec != null)
+                    var det = detalles.FirstOrDefault(d => d.id == asig.recurso_id);
+                    if (det != null)
                     {
-                        dominioMision.Recursos.Add(rec);
+                        var rec = RecursoRepositorio.MapearDetalleADominio(det);
+                        if (rec != null)
+                        {
+                            dominioMision.Recursos.Add(rec);
+                            dominioMision.Asignaciones.Add(new AsignacionRecurso(
+                                asig.id,
+                                dominioMision,
+                                rec,
+                                asig.fecha_asignacion,
+                                asig.fecha_liberacion,
+                                asig.activa,
+                                duracionDias
+                            ));
+                        }
                     }
                 }
             }
