@@ -83,14 +83,14 @@ La solución sigue una arquitectura en capas desacoplada:
 ### 2. Principio Abierto/Cerrado (Open/Closed Principle - OCP)
 * **En qué parte del código se identifica:**
   En la clase abstracta `RecursoExploracion` y el método polimórfico `CalcularCostoOperacion(decimal cantidad)`.
-  Las clases derivadas (`Dron`, `RoverTerrestre`, `EstacionSensores`) sobrescriben este comportamiento con su propia fórmula:
-  - Dron: $\text{horas} \times \text{costo/hora}$
-  - Rover: $\text{kilómetros} \times \text{costo/km}$
-  - Estación: $\text{días} \times \text{costo/día}$
+  Las clases derivadas (`Dron`, `RoverTerrestre`, `EstacionSensores`) sobrescriben este comportamiento con su propia fórmula y unidad de operación:
+  - Dron: $\text{horas de vuelo} \times \text{costo/hora}$
+  - Rover: $\text{kilómetros de recorrido} \times \text{costo/km}$
+  - Estación: $\text{días de monitoreo} \times \text{costo/día}$
   
-  El método `Mision.CalcularCostoEstimado()` itera sobre la lista `recursos` ejecutando `recurso.CalcularCostoOperacion(...)` de forma polimórfica **sin usar `if` ni `switch` para comprobar el tipo concreto**.
+  La entidad `AsignacionRecurso` conserva la `CantidadOperacion` persistida en base de datos (`asignacion_recurso.cantidad_operacion`), y el método `Mision.CalcularCostoEstimado()` itera sobre las asignaciones activas delegando a `asig.CalcularCosto()` y a `recurso.CalcularCostoOperacion(...)` de forma polimórfica **sin usar `if` ni `switch` para comprobar el tipo concreto**.
 * **Qué problema se pretende evitar:**
-  Si en el futuro se incorpora un nuevo recurso (por ejemplo, `SateliteOrbital`), solo se crea la nueva clase que herede de `RecursoExploracion`. No es necesario modificar ni una sola línea de código existente en `Mision.cs` ni en la clase base.
+  Si en el futuro se incorpora un nuevo recurso (por ejemplo, `SateliteOrbital`), solo se crea la nueva clase que herede de `RecursoExploracion`. No es necesario modificar ni una sola línea de código existente en `Mision.cs` ni en la clase base ni en la lógica de cálculo.
 
 ### 3. Principio de Sustitución de Liskov (Liskov Substitution Principle - LSP)
 * **En qué parte del código se identifica:**

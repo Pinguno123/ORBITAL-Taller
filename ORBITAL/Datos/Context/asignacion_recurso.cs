@@ -20,6 +20,7 @@ namespace ORBITAL.Datos.Context
         public System.DateTime fecha_asignacion { get; set; }
         public Nullable<System.DateTime> fecha_liberacion { get; set; }
         public bool activa { get; set; }
+        public decimal cantidad_operacion { get; set; }
     
         public virtual mision mision { get; set; }
         public virtual recurso_exploracion recurso_exploracion { get; set; }

@@ -11,7 +11,7 @@ namespace ORBITAL.Datos.Repositorios
 {
     public class AsignacionRepositorio
     {
-        public void RegistrarAsignacion(int misionId, int recursoId)
+        public void RegistrarAsignacion(int misionId, int recursoId, decimal cantidadOperacion = 1)
         {
             using (var db = new orbita_controlEntities())
             {
@@ -32,7 +32,8 @@ namespace ORBITAL.Datos.Repositorios
                     recurso_id = recursoId,
                     fecha_asignacion = DateTime.Now,
                     fecha_liberacion = null,
-                    activa = true
+                    activa = true,
+                    cantidad_operacion = cantidadOperacion > 0 ? cantidadOperacion : 1
                 };
 
                 db.asignacion_recurso.Add(asignacion);

@@ -504,7 +504,10 @@ namespace ORBITAL
                         {
                             foreach (var r in m.Recursos)
                             {
-                                Console.WriteLine($"   * {r}");
+                                var asig = m.Asignaciones.FirstOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id && a.EstaActiva());
+                            string unidad = r is Dron ? "horas de vuelo" : (r is RoverTerrestre ? "km" : "días");
+                            string detalleUso = asig != null ? $" | Uso asignado: {asig.CantidadOperacion:N2} {unidad}" : "";
+                            Console.WriteLine($"   * {r}{detalleUso}");
                             }
                         }
                     }
@@ -740,8 +743,8 @@ namespace ORBITAL
                 // Asignar en entidad de dominio con cálculo de costo
                 mision.AsignarRecurso(recurso, cantidadOperacion);
 
-                // Persistir en base de datos
-                asignacionRepo.RegistrarAsignacion(mision.Id, recurso.Id);
+                // Persistir en base de datos con la cantidad de operación ingresada
+                asignacionRepo.RegistrarAsignacion(mision.Id, recurso.Id, cantidadOperacion);
 
                 decimal costoCalculado = recurso.CalcularCostoOperacion(cantidadOperacion);
 
@@ -1041,10 +1044,11 @@ namespace ORBITAL
                 {
                     foreach (var r in mision.Recursos)
                     {
-                        // Invocación polimórfica sin if ni switch de tipos
-                        decimal costoIndividual = r.CalcularCostoOperacion(dias);
+                        var asig = mision.Asignaciones.FirstOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id && a.EstaActiva());
+                        decimal cantidadUso = asig != null ? asig.CantidadOperacion : dias;
+                        decimal costoIndividual = asig != null ? asig.CalcularCosto() : r.CalcularCostoOperacion(cantidadUso);
                         string unidad = r is Dron ? "horas de vuelo" : (r is RoverTerrestre ? "km" : "días");
-                        Console.WriteLine($"  * {r.Codigo} ({r.Modelo}) [{r.GetType().Name}] -> Costo ({dias} {unidad}): ${costoIndividual:N2}");
+                        Console.WriteLine($"  * {r.Codigo} ({r.Modelo}) [{r.GetType().Name}] -> Costo ({cantidadUso:N2} {unidad}): ${costoIndividual:N2}");
                     }
                 }
 

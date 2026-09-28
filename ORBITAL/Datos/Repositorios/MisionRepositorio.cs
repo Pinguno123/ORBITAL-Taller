@@ -141,13 +141,17 @@ namespace ORBITAL.Datos.Repositorios
                         var efRecurso = db.recurso_exploracion.Find(rec.Id);
                         if (efRecurso != null)
                         {
+                            var asigDominio = mision.Asignaciones?.FirstOrDefault(a => a.Recurso != null && a.Recurso.Id == rec.Id && a.EstaActiva());
+                            decimal cantOp = asigDominio != null && asigDominio.CantidadOperacion > 0 ? asigDominio.CantidadOperacion : 1;
+
                             db.asignacion_recurso.Add(new asignacion_recurso
                             {
                                 mision_id = efMision.id,
                                 recurso_id = rec.Id,
                                 fecha_asignacion = DateTime.Now,
                                 fecha_liberacion = null,
-                                activa = true
+                                activa = true,
+                                cantidad_operacion = cantOp
                             });
 
                             efRecurso.estado = (byte)EstadoRecurso.Asignado;
@@ -339,6 +343,7 @@ namespace ORBITAL.Datos.Repositorios
                             {
                                 dominioMision.Recursos.Add(rec);
                             }
+                            decimal cantidadUso = asig.cantidad_operacion > 0 ? asig.cantidad_operacion : duracionDias;
                             dominioMision.Asignaciones.Add(new AsignacionRecurso(
                                 asig.id,
                                 dominioMision,
@@ -346,7 +351,7 @@ namespace ORBITAL.Datos.Repositorios
                                 asig.fecha_asignacion,
                                 asig.fecha_liberacion,
                                 asig.activa,
-                                duracionDias
+                                cantidadUso
                             ));
                         }
                     }

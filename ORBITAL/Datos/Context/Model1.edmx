@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
@@ -15,6 +15,7 @@
           <Property Name="fecha_asignacion" Type="datetime2" Precision="0" Nullable="false" />
           <Property Name="fecha_liberacion" Type="datetime2" Precision="0" />
           <Property Name="activa" Type="bit" Nullable="false" />
+          <Property Name="cantidad_operacion" Type="decimal" Precision="10" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="dron">
           <Key>
@@ -283,6 +284,7 @@ advertencia 6002: La tabla o vista 'orbita_control.dbo.vw_recurso_detalle' no ti
           <Property Name="fecha_asignacion" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="fecha_liberacion" Type="DateTime" Precision="0" />
           <Property Name="activa" Type="Boolean" Nullable="false" />
+          <Property Name="cantidad_operacion" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
           <NavigationProperty Name="mision" Relationship="Self.fk_asignacion_recurso_mision" FromRole="asignacion_recurso" ToRole="mision" />
           <NavigationProperty Name="recurso_exploracion" Relationship="Self.fk_asignacion_recurso_recurso" FromRole="asignacion_recurso" ToRole="recurso_exploracion" />
         </EntityType>
@@ -530,6 +532,7 @@ advertencia 6002: La tabla o vista 'orbita_control.dbo.vw_recurso_detalle' no ti
                 <ScalarProperty Name="fecha_asignacion" ColumnName="fecha_asignacion" />
                 <ScalarProperty Name="fecha_liberacion" ColumnName="fecha_liberacion" />
                 <ScalarProperty Name="activa" ColumnName="activa" />
+                <ScalarProperty Name="cantidad_operacion" ColumnName="cantidad_operacion" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
