@@ -1,0 +1,661 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="orbita_controlModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="asignacion_recurso">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="mision_id" Type="int" Nullable="false" />
+          <Property Name="recurso_id" Type="int" Nullable="false" />
+          <Property Name="fecha_asignacion" Type="datetime2" Precision="0" Nullable="false" />
+          <Property Name="fecha_liberacion" Type="datetime2" Precision="0" />
+          <Property Name="activa" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="dron">
+          <Key>
+            <PropertyRef Name="recurso_id" />
+          </Key>
+          <Property Name="recurso_id" Type="int" Nullable="false" />
+          <Property Name="autonomia_vuelo" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="alcance" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="costo_por_hora" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="estacion_sensores">
+          <Key>
+            <PropertyRef Name="recurso_id" />
+          </Key>
+          <Property Name="recurso_id" Type="int" Nullable="false" />
+          <Property Name="cantidad_sensores" Type="int" Nullable="false" />
+          <Property Name="consumo_energetico" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="costo_diario" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="mision">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="codigo" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="nombre" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="descripcion" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="fecha_inicio" Type="datetime2" Precision="0" Nullable="false" />
+          <Property Name="fecha_fin_estimada" Type="datetime2" Precision="0" Nullable="false" />
+          <Property Name="prioridad" Type="tinyint" Nullable="false" />
+          <Property Name="estado" Type="tinyint" Nullable="false" />
+          <Property Name="responsable_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="recurso_exploracion">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="codigo" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="modelo" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="tipo" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="estado" Type="tinyint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="rover_terrestre">
+          <Key>
+            <PropertyRef Name="recurso_id" />
+          </Key>
+          <Property Name="recurso_id" Type="int" Nullable="false" />
+          <Property Name="autonomia" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="capacidad_carga" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="costo_por_kilometro" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="usuario">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="nombre_usuario" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="contrasena" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="rol" Type="tinyint" Nullable="false" />
+          <Property Name="estado" Type="tinyint" Nullable="false" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'orbita_control.dbo.vw_asignaciones_activas' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="vw_asignaciones_activas">
+          <Key>
+            <PropertyRef Name="asignacion_id" />
+            <PropertyRef Name="mision_id" />
+            <PropertyRef Name="codigo_mision" />
+            <PropertyRef Name="nombre_mision" />
+            <PropertyRef Name="recurso_id" />
+            <PropertyRef Name="codigo_recurso" />
+            <PropertyRef Name="modelo_recurso" />
+            <PropertyRef Name="tipo_recurso" />
+            <PropertyRef Name="fecha_asignacion" />
+          </Key>
+          <Property Name="asignacion_id" Type="int" Nullable="false" />
+          <Property Name="mision_id" Type="int" Nullable="false" />
+          <Property Name="codigo_mision" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="nombre_mision" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="recurso_id" Type="int" Nullable="false" />
+          <Property Name="codigo_recurso" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="modelo_recurso" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="tipo_recurso" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="fecha_asignacion" Type="datetime2" Precision="0" Nullable="false" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'orbita_control.dbo.vw_recurso_detalle' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="vw_recurso_detalle">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="codigo" />
+            <PropertyRef Name="modelo" />
+            <PropertyRef Name="tipo" />
+            <PropertyRef Name="estado" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="codigo" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="modelo" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="tipo" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="estado" Type="tinyint" Nullable="false" />
+          <Property Name="autonomia_vuelo" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="alcance" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="costo_por_hora" Type="decimal" Precision="12" Scale="2" />
+          <Property Name="autonomia_rover" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="capacidad_carga" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="costo_por_kilometro" Type="decimal" Precision="12" Scale="2" />
+          <Property Name="cantidad_sensores" Type="int" />
+          <Property Name="consumo_energetico" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="costo_diario" Type="decimal" Precision="12" Scale="2" />
+        </EntityType>
+        <Association Name="fk_asignacion_recurso_mision">
+          <End Role="mision" Type="Self.mision" Multiplicity="1" />
+          <End Role="asignacion_recurso" Type="Self.asignacion_recurso" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="mision">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="asignacion_recurso">
+              <PropertyRef Name="mision_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_asignacion_recurso_recurso">
+          <End Role="recurso_exploracion" Type="Self.recurso_exploracion" Multiplicity="1" />
+          <End Role="asignacion_recurso" Type="Self.asignacion_recurso" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="recurso_exploracion">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="asignacion_recurso">
+              <PropertyRef Name="recurso_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_dron_recurso_exploracion">
+          <End Role="recurso_exploracion" Type="Self.recurso_exploracion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="dron" Type="Self.dron" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="recurso_exploracion">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="dron">
+              <PropertyRef Name="recurso_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_estacion_sensores_recurso_exploracion">
+          <End Role="recurso_exploracion" Type="Self.recurso_exploracion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="estacion_sensores" Type="Self.estacion_sensores" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="recurso_exploracion">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="estacion_sensores">
+              <PropertyRef Name="recurso_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_mision_responsable">
+          <End Role="usuario" Type="Self.usuario" Multiplicity="1" />
+          <End Role="mision" Type="Self.mision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="usuario">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="mision">
+              <PropertyRef Name="responsable_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_rover_terrestre_recurso_exploracion">
+          <End Role="recurso_exploracion" Type="Self.recurso_exploracion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="rover_terrestre" Type="Self.rover_terrestre" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="recurso_exploracion">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="rover_terrestre">
+              <PropertyRef Name="recurso_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="orbita_controlModelStoreContainer">
+          <EntitySet Name="asignacion_recurso" EntityType="Self.asignacion_recurso" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="dron" EntityType="Self.dron" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="estacion_sensores" EntityType="Self.estacion_sensores" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="mision" EntityType="Self.mision" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="recurso_exploracion" EntityType="Self.recurso_exploracion" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="rover_terrestre" EntityType="Self.rover_terrestre" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="usuario" EntityType="Self.usuario" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vw_asignaciones_activas" EntityType="Self.vw_asignaciones_activas" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_asignaciones_activas].[asignacion_id] AS [asignacion_id], 
+    [vw_asignaciones_activas].[mision_id] AS [mision_id], 
+    [vw_asignaciones_activas].[codigo_mision] AS [codigo_mision], 
+    [vw_asignaciones_activas].[nombre_mision] AS [nombre_mision], 
+    [vw_asignaciones_activas].[recurso_id] AS [recurso_id], 
+    [vw_asignaciones_activas].[codigo_recurso] AS [codigo_recurso], 
+    [vw_asignaciones_activas].[modelo_recurso] AS [modelo_recurso], 
+    [vw_asignaciones_activas].[tipo_recurso] AS [tipo_recurso], 
+    [vw_asignaciones_activas].[fecha_asignacion] AS [fecha_asignacion]
+    FROM [dbo].[vw_asignaciones_activas] AS [vw_asignaciones_activas]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_recurso_detalle" EntityType="Self.vw_recurso_detalle" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_recurso_detalle].[id] AS [id], 
+    [vw_recurso_detalle].[codigo] AS [codigo], 
+    [vw_recurso_detalle].[modelo] AS [modelo], 
+    [vw_recurso_detalle].[tipo] AS [tipo], 
+    [vw_recurso_detalle].[estado] AS [estado], 
+    [vw_recurso_detalle].[autonomia_vuelo] AS [autonomia_vuelo], 
+    [vw_recurso_detalle].[alcance] AS [alcance], 
+    [vw_recurso_detalle].[costo_por_hora] AS [costo_por_hora], 
+    [vw_recurso_detalle].[autonomia_rover] AS [autonomia_rover], 
+    [vw_recurso_detalle].[capacidad_carga] AS [capacidad_carga], 
+    [vw_recurso_detalle].[costo_por_kilometro] AS [costo_por_kilometro], 
+    [vw_recurso_detalle].[cantidad_sensores] AS [cantidad_sensores], 
+    [vw_recurso_detalle].[consumo_energetico] AS [consumo_energetico], 
+    [vw_recurso_detalle].[costo_diario] AS [costo_diario]
+    FROM [dbo].[vw_recurso_detalle] AS [vw_recurso_detalle]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="fk_asignacion_recurso_mision" Association="Self.fk_asignacion_recurso_mision">
+            <End Role="mision" EntitySet="mision" />
+            <End Role="asignacion_recurso" EntitySet="asignacion_recurso" />
+          </AssociationSet>
+          <AssociationSet Name="fk_asignacion_recurso_recurso" Association="Self.fk_asignacion_recurso_recurso">
+            <End Role="recurso_exploracion" EntitySet="recurso_exploracion" />
+            <End Role="asignacion_recurso" EntitySet="asignacion_recurso" />
+          </AssociationSet>
+          <AssociationSet Name="fk_dron_recurso_exploracion" Association="Self.fk_dron_recurso_exploracion">
+            <End Role="recurso_exploracion" EntitySet="recurso_exploracion" />
+            <End Role="dron" EntitySet="dron" />
+          </AssociationSet>
+          <AssociationSet Name="fk_estacion_sensores_recurso_exploracion" Association="Self.fk_estacion_sensores_recurso_exploracion">
+            <End Role="recurso_exploracion" EntitySet="recurso_exploracion" />
+            <End Role="estacion_sensores" EntitySet="estacion_sensores" />
+          </AssociationSet>
+          <AssociationSet Name="fk_mision_responsable" Association="Self.fk_mision_responsable">
+            <End Role="usuario" EntitySet="usuario" />
+            <End Role="mision" EntitySet="mision" />
+          </AssociationSet>
+          <AssociationSet Name="fk_rover_terrestre_recurso_exploracion" Association="Self.fk_rover_terrestre_recurso_exploracion">
+            <End Role="recurso_exploracion" EntitySet="recurso_exploracion" />
+            <End Role="rover_terrestre" EntitySet="rover_terrestre" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="orbita_controlModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="asignacion_recurso">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="mision_id" Type="Int32" Nullable="false" />
+          <Property Name="recurso_id" Type="Int32" Nullable="false" />
+          <Property Name="fecha_asignacion" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="fecha_liberacion" Type="DateTime" Precision="0" />
+          <Property Name="activa" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="mision" Relationship="Self.fk_asignacion_recurso_mision" FromRole="asignacion_recurso" ToRole="mision" />
+          <NavigationProperty Name="recurso_exploracion" Relationship="Self.fk_asignacion_recurso_recurso" FromRole="asignacion_recurso" ToRole="recurso_exploracion" />
+        </EntityType>
+        <EntityType Name="dron">
+          <Key>
+            <PropertyRef Name="recurso_id" />
+          </Key>
+          <Property Name="recurso_id" Type="Int32" Nullable="false" />
+          <Property Name="autonomia_vuelo" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="alcance" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="costo_por_hora" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <NavigationProperty Name="recurso_exploracion" Relationship="Self.fk_dron_recurso_exploracion" FromRole="dron" ToRole="recurso_exploracion" />
+        </EntityType>
+        <EntityType Name="estacion_sensores">
+          <Key>
+            <PropertyRef Name="recurso_id" />
+          </Key>
+          <Property Name="recurso_id" Type="Int32" Nullable="false" />
+          <Property Name="cantidad_sensores" Type="Int32" Nullable="false" />
+          <Property Name="consumo_energetico" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="costo_diario" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <NavigationProperty Name="recurso_exploracion" Relationship="Self.fk_estacion_sensores_recurso_exploracion" FromRole="estacion_sensores" ToRole="recurso_exploracion" />
+        </EntityType>
+        <EntityType Name="mision">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="codigo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="nombre" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="descripcion" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="fecha_inicio" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="fecha_fin_estimada" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="prioridad" Type="Byte" Nullable="false" />
+          <Property Name="estado" Type="Byte" Nullable="false" />
+          <Property Name="responsable_id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="asignacion_recurso" Relationship="Self.fk_asignacion_recurso_mision" FromRole="mision" ToRole="asignacion_recurso" />
+          <NavigationProperty Name="usuario" Relationship="Self.fk_mision_responsable" FromRole="mision" ToRole="usuario" />
+        </EntityType>
+        <EntityType Name="recurso_exploracion">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="codigo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="modelo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="tipo" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="estado" Type="Byte" Nullable="false" />
+          <NavigationProperty Name="asignacion_recurso" Relationship="Self.fk_asignacion_recurso_recurso" FromRole="recurso_exploracion" ToRole="asignacion_recurso" />
+          <NavigationProperty Name="dron" Relationship="Self.fk_dron_recurso_exploracion" FromRole="recurso_exploracion" ToRole="dron" />
+          <NavigationProperty Name="estacion_sensores" Relationship="Self.fk_estacion_sensores_recurso_exploracion" FromRole="recurso_exploracion" ToRole="estacion_sensores" />
+          <NavigationProperty Name="rover_terrestre" Relationship="Self.fk_rover_terrestre_recurso_exploracion" FromRole="recurso_exploracion" ToRole="rover_terrestre" />
+        </EntityType>
+        <EntityType Name="rover_terrestre">
+          <Key>
+            <PropertyRef Name="recurso_id" />
+          </Key>
+          <Property Name="recurso_id" Type="Int32" Nullable="false" />
+          <Property Name="autonomia" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="capacidad_carga" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="costo_por_kilometro" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <NavigationProperty Name="recurso_exploracion" Relationship="Self.fk_rover_terrestre_recurso_exploracion" FromRole="rover_terrestre" ToRole="recurso_exploracion" />
+        </EntityType>
+        <EntityType Name="usuario">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="nombre_usuario" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="contrasena" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="rol" Type="Byte" Nullable="false" />
+          <Property Name="estado" Type="Byte" Nullable="false" />
+          <NavigationProperty Name="mision" Relationship="Self.fk_mision_responsable" FromRole="usuario" ToRole="mision" />
+        </EntityType>
+        <EntityType Name="vw_asignaciones_activas">
+          <Key>
+            <PropertyRef Name="asignacion_id" />
+            <PropertyRef Name="mision_id" />
+            <PropertyRef Name="codigo_mision" />
+            <PropertyRef Name="nombre_mision" />
+            <PropertyRef Name="recurso_id" />
+            <PropertyRef Name="codigo_recurso" />
+            <PropertyRef Name="modelo_recurso" />
+            <PropertyRef Name="tipo_recurso" />
+            <PropertyRef Name="fecha_asignacion" />
+          </Key>
+          <Property Name="asignacion_id" Type="Int32" Nullable="false" />
+          <Property Name="mision_id" Type="Int32" Nullable="false" />
+          <Property Name="codigo_mision" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="nombre_mision" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="recurso_id" Type="Int32" Nullable="false" />
+          <Property Name="codigo_recurso" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="modelo_recurso" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="tipo_recurso" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="fecha_asignacion" Type="DateTime" Nullable="false" Precision="0" />
+        </EntityType>
+        <EntityType Name="vw_recurso_detalle">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="codigo" />
+            <PropertyRef Name="modelo" />
+            <PropertyRef Name="tipo" />
+            <PropertyRef Name="estado" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="codigo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="modelo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="tipo" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="estado" Type="Byte" Nullable="false" />
+          <Property Name="autonomia_vuelo" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="alcance" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="costo_por_hora" Type="Decimal" Precision="12" Scale="2" />
+          <Property Name="autonomia_rover" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="capacidad_carga" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="costo_por_kilometro" Type="Decimal" Precision="12" Scale="2" />
+          <Property Name="cantidad_sensores" Type="Int32" />
+          <Property Name="consumo_energetico" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="costo_diario" Type="Decimal" Precision="12" Scale="2" />
+        </EntityType>
+        <Association Name="fk_asignacion_recurso_mision">
+          <End Role="mision" Type="Self.mision" Multiplicity="1" />
+          <End Role="asignacion_recurso" Type="Self.asignacion_recurso" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="mision">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="asignacion_recurso">
+              <PropertyRef Name="mision_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_asignacion_recurso_recurso">
+          <End Role="recurso_exploracion" Type="Self.recurso_exploracion" Multiplicity="1" />
+          <End Role="asignacion_recurso" Type="Self.asignacion_recurso" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="recurso_exploracion">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="asignacion_recurso">
+              <PropertyRef Name="recurso_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_dron_recurso_exploracion">
+          <End Role="recurso_exploracion" Type="Self.recurso_exploracion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="dron" Type="Self.dron" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="recurso_exploracion">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="dron">
+              <PropertyRef Name="recurso_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_estacion_sensores_recurso_exploracion">
+          <End Role="recurso_exploracion" Type="Self.recurso_exploracion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="estacion_sensores" Type="Self.estacion_sensores" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="recurso_exploracion">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="estacion_sensores">
+              <PropertyRef Name="recurso_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_mision_responsable">
+          <End Role="usuario" Type="Self.usuario" Multiplicity="1" />
+          <End Role="mision" Type="Self.mision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="usuario">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="mision">
+              <PropertyRef Name="responsable_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_rover_terrestre_recurso_exploracion">
+          <End Role="recurso_exploracion" Type="Self.recurso_exploracion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="rover_terrestre" Type="Self.rover_terrestre" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="recurso_exploracion">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="rover_terrestre">
+              <PropertyRef Name="recurso_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="orbita_controlEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="asignacion_recurso" EntityType="Self.asignacion_recurso" />
+          <EntitySet Name="dron" EntityType="Self.dron" />
+          <EntitySet Name="estacion_sensores" EntityType="Self.estacion_sensores" />
+          <EntitySet Name="mision" EntityType="Self.mision" />
+          <EntitySet Name="recurso_exploracion" EntityType="Self.recurso_exploracion" />
+          <EntitySet Name="rover_terrestre" EntityType="Self.rover_terrestre" />
+          <EntitySet Name="usuario" EntityType="Self.usuario" />
+          <EntitySet Name="vw_asignaciones_activas" EntityType="Self.vw_asignaciones_activas" />
+          <EntitySet Name="vw_recurso_detalle" EntityType="Self.vw_recurso_detalle" />
+          <AssociationSet Name="fk_asignacion_recurso_mision" Association="Self.fk_asignacion_recurso_mision">
+            <End Role="mision" EntitySet="mision" />
+            <End Role="asignacion_recurso" EntitySet="asignacion_recurso" />
+          </AssociationSet>
+          <AssociationSet Name="fk_asignacion_recurso_recurso" Association="Self.fk_asignacion_recurso_recurso">
+            <End Role="recurso_exploracion" EntitySet="recurso_exploracion" />
+            <End Role="asignacion_recurso" EntitySet="asignacion_recurso" />
+          </AssociationSet>
+          <AssociationSet Name="fk_dron_recurso_exploracion" Association="Self.fk_dron_recurso_exploracion">
+            <End Role="recurso_exploracion" EntitySet="recurso_exploracion" />
+            <End Role="dron" EntitySet="dron" />
+          </AssociationSet>
+          <AssociationSet Name="fk_estacion_sensores_recurso_exploracion" Association="Self.fk_estacion_sensores_recurso_exploracion">
+            <End Role="recurso_exploracion" EntitySet="recurso_exploracion" />
+            <End Role="estacion_sensores" EntitySet="estacion_sensores" />
+          </AssociationSet>
+          <AssociationSet Name="fk_mision_responsable" Association="Self.fk_mision_responsable">
+            <End Role="usuario" EntitySet="usuario" />
+            <End Role="mision" EntitySet="mision" />
+          </AssociationSet>
+          <AssociationSet Name="fk_rover_terrestre_recurso_exploracion" Association="Self.fk_rover_terrestre_recurso_exploracion">
+            <End Role="recurso_exploracion" EntitySet="recurso_exploracion" />
+            <End Role="rover_terrestre" EntitySet="rover_terrestre" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="orbita_controlModelStoreContainer" CdmEntityContainer="orbita_controlEntities">
+          <EntitySetMapping Name="asignacion_recurso">
+            <EntityTypeMapping TypeName="orbita_controlModel.asignacion_recurso">
+              <MappingFragment StoreEntitySet="asignacion_recurso">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="mision_id" ColumnName="mision_id" />
+                <ScalarProperty Name="recurso_id" ColumnName="recurso_id" />
+                <ScalarProperty Name="fecha_asignacion" ColumnName="fecha_asignacion" />
+                <ScalarProperty Name="fecha_liberacion" ColumnName="fecha_liberacion" />
+                <ScalarProperty Name="activa" ColumnName="activa" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="dron">
+            <EntityTypeMapping TypeName="orbita_controlModel.dron">
+              <MappingFragment StoreEntitySet="dron">
+                <ScalarProperty Name="recurso_id" ColumnName="recurso_id" />
+                <ScalarProperty Name="autonomia_vuelo" ColumnName="autonomia_vuelo" />
+                <ScalarProperty Name="alcance" ColumnName="alcance" />
+                <ScalarProperty Name="costo_por_hora" ColumnName="costo_por_hora" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="estacion_sensores">
+            <EntityTypeMapping TypeName="orbita_controlModel.estacion_sensores">
+              <MappingFragment StoreEntitySet="estacion_sensores">
+                <ScalarProperty Name="recurso_id" ColumnName="recurso_id" />
+                <ScalarProperty Name="cantidad_sensores" ColumnName="cantidad_sensores" />
+                <ScalarProperty Name="consumo_energetico" ColumnName="consumo_energetico" />
+                <ScalarProperty Name="costo_diario" ColumnName="costo_diario" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mision">
+            <EntityTypeMapping TypeName="orbita_controlModel.mision">
+              <MappingFragment StoreEntitySet="mision">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="codigo" ColumnName="codigo" />
+                <ScalarProperty Name="nombre" ColumnName="nombre" />
+                <ScalarProperty Name="descripcion" ColumnName="descripcion" />
+                <ScalarProperty Name="fecha_inicio" ColumnName="fecha_inicio" />
+                <ScalarProperty Name="fecha_fin_estimada" ColumnName="fecha_fin_estimada" />
+                <ScalarProperty Name="prioridad" ColumnName="prioridad" />
+                <ScalarProperty Name="estado" ColumnName="estado" />
+                <ScalarProperty Name="responsable_id" ColumnName="responsable_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="recurso_exploracion">
+            <EntityTypeMapping TypeName="orbita_controlModel.recurso_exploracion">
+              <MappingFragment StoreEntitySet="recurso_exploracion">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="codigo" ColumnName="codigo" />
+                <ScalarProperty Name="modelo" ColumnName="modelo" />
+                <ScalarProperty Name="tipo" ColumnName="tipo" />
+                <ScalarProperty Name="estado" ColumnName="estado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="rover_terrestre">
+            <EntityTypeMapping TypeName="orbita_controlModel.rover_terrestre">
+              <MappingFragment StoreEntitySet="rover_terrestre">
+                <ScalarProperty Name="recurso_id" ColumnName="recurso_id" />
+                <ScalarProperty Name="autonomia" ColumnName="autonomia" />
+                <ScalarProperty Name="capacidad_carga" ColumnName="capacidad_carga" />
+                <ScalarProperty Name="costo_por_kilometro" ColumnName="costo_por_kilometro" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="usuario">
+            <EntityTypeMapping TypeName="orbita_controlModel.usuario">
+              <MappingFragment StoreEntitySet="usuario">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="nombre_usuario" ColumnName="nombre_usuario" />
+                <ScalarProperty Name="contrasena" ColumnName="contrasena" />
+                <ScalarProperty Name="rol" ColumnName="rol" />
+                <ScalarProperty Name="estado" ColumnName="estado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_asignaciones_activas">
+            <EntityTypeMapping TypeName="orbita_controlModel.vw_asignaciones_activas">
+              <MappingFragment StoreEntitySet="vw_asignaciones_activas">
+                <ScalarProperty Name="asignacion_id" ColumnName="asignacion_id" />
+                <ScalarProperty Name="mision_id" ColumnName="mision_id" />
+                <ScalarProperty Name="codigo_mision" ColumnName="codigo_mision" />
+                <ScalarProperty Name="nombre_mision" ColumnName="nombre_mision" />
+                <ScalarProperty Name="recurso_id" ColumnName="recurso_id" />
+                <ScalarProperty Name="codigo_recurso" ColumnName="codigo_recurso" />
+                <ScalarProperty Name="modelo_recurso" ColumnName="modelo_recurso" />
+                <ScalarProperty Name="tipo_recurso" ColumnName="tipo_recurso" />
+                <ScalarProperty Name="fecha_asignacion" ColumnName="fecha_asignacion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_recurso_detalle">
+            <EntityTypeMapping TypeName="orbita_controlModel.vw_recurso_detalle">
+              <MappingFragment StoreEntitySet="vw_recurso_detalle">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="codigo" ColumnName="codigo" />
+                <ScalarProperty Name="modelo" ColumnName="modelo" />
+                <ScalarProperty Name="tipo" ColumnName="tipo" />
+                <ScalarProperty Name="estado" ColumnName="estado" />
+                <ScalarProperty Name="autonomia_vuelo" ColumnName="autonomia_vuelo" />
+                <ScalarProperty Name="alcance" ColumnName="alcance" />
+                <ScalarProperty Name="costo_por_hora" ColumnName="costo_por_hora" />
+                <ScalarProperty Name="autonomia_rover" ColumnName="autonomia_rover" />
+                <ScalarProperty Name="capacidad_carga" ColumnName="capacidad_carga" />
+                <ScalarProperty Name="costo_por_kilometro" ColumnName="costo_por_kilometro" />
+                <ScalarProperty Name="cantidad_sensores" ColumnName="cantidad_sensores" />
+                <ScalarProperty Name="consumo_energetico" ColumnName="consumo_energetico" />
+                <ScalarProperty Name="costo_diario" ColumnName="costo_diario" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
