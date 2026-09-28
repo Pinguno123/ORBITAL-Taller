@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +32,11 @@ namespace ORBITAL.Dominio.Entidades
         public override decimal CalcularCostoOperacion(decimal cantidad)
         {
             return cantidad * this.costoPorHora;
+        }
+
+        public override string ToString()
+        {
+            return $"{codigo} | Dron {modelo} | {estado} | Autonomía: {autonomiaVuelo}h | Alcance: {alcance}km | Costo/h: ${costoPorHora:N2}";
         }
     }
 }

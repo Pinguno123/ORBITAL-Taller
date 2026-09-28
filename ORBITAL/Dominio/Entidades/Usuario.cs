@@ -1,4 +1,4 @@
-﻿using ORBITAL.Dominio.Enumeraciones;
+using ORBITAL.Dominio.Enumeraciones;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,25 +34,38 @@ namespace ORBITAL.Dominio.Entidades
             this.estado = EstadoUsuario.Activo; // Activo por defecto
         }
 
-        // Metodos públicos
+        public Usuario(int id, string nombreUsuario, string contraseña, RolUsuario rol, EstadoUsuario estado)
+        {
+            this.id = id;
+            this.nombreUsuario = nombreUsuario;
+            this.contraseña = contraseña;
+            this.rol = rol;
+            this.estado = estado;
+        }
+
+        // Métodos públicos
         public bool IniciarSesion(string contraseña)
         {
-            // Falta la lógica para obtener la contraseña y compararla
-            return this.contraseña == contraseña;
+            if (!EstaActivo())
+            {
+                return false;
+            }
+            return string.Equals(this.contraseña, contraseña, StringComparison.Ordinal);
         }
 
         public void CerrarSesion()
         {
-            // Falta la lógica para cerrar la sesión
+            // Lógica de finalización de contexto del usuario
         }
 
         public bool EstaActivo()
         {
             return this.estado == EstadoUsuario.Activo;
         }
+
         public override string ToString()
         {
-            return "Usuario: " + nombreUsuario + ", Rol: " + rol + "";
+            return $"{nombreUsuario} | Rol: {rol} | Estado: {estado}";
         }
     }
 }

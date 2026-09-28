@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +32,11 @@ namespace ORBITAL.Dominio.Entidades
         public override decimal CalcularCostoOperacion(decimal kilometros)
         {
             return kilometros * this.costoPorKilometro;
+        }
+
+        public override string ToString()
+        {
+            return $"{codigo} | Rover {modelo} | {estado} | Autonomía: {autonomia}km | Carga: {capacidadCarga}kg | Costo/km: ${costoPorKilometro:N2}";
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +32,11 @@ namespace ORBITAL.Dominio.Entidades
         public override decimal CalcularCostoOperacion(decimal dias)
         {
             return dias * this.costoDiario;
+        }
+
+        public override string ToString()
+        {
+            return $"{codigo} | Estación {modelo} | {estado} | Sensores: {cantidadSensores} | Consumo: {consumoEnergetico}kW | Costo/día: ${costoDiario:N2}";
         }
     }
 }

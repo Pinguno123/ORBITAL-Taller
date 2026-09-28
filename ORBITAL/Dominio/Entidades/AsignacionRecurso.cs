@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,12 +17,12 @@ namespace ORBITAL.Dominio.Entidades
         private bool activa;
 
         // Getters y Setters
-        public int Id { get => id; private set => id = value; }
-        public Mision Mision { get => mision; private set => mision = value; }
-        public RecursoExploracion Recurso { get => recurso; private set => recurso = value; }
-        public DateTime FechaAsignacion { get => fechaAsignacion; private set => fechaAsignacion = value; }
-        public DateTime? FechaLiberacion { get => fechaLiberacion; private set => fechaLiberacion = value; }
-        public bool Activa { get => activa; private set => activa = value; }
+        public int Id { get => id; set => id = value; }
+        public Mision Mision { get => mision; set => mision = value; }
+        public RecursoExploracion Recurso { get => recurso; set => recurso = value; }
+        public DateTime FechaAsignacion { get => fechaAsignacion; set => fechaAsignacion = value; }
+        public DateTime? FechaLiberacion { get => fechaLiberacion; set => fechaLiberacion = value; }
+        public bool Activa { get => activa; set => activa = value; }
 
         // Constructor
         public AsignacionRecurso(Mision mision, RecursoExploracion recurso)
@@ -38,6 +38,19 @@ namespace ORBITAL.Dominio.Entidades
             this.fechaAsignacion = DateTime.Now;
             this.fechaLiberacion = null;
             this.activa = true;
+
+            // Asegurar que el recurso pase a asignado
+            recurso.Asignar(mision);
+        }
+
+        public AsignacionRecurso(int id, Mision mision, RecursoExploracion recurso, DateTime fechaAsignacion, DateTime? fechaLiberacion, bool activa)
+        {
+            this.id = id;
+            this.mision = mision;
+            this.recurso = recurso;
+            this.fechaAsignacion = fechaAsignacion;
+            this.fechaLiberacion = fechaLiberacion;
+            this.activa = activa;
         }
 
         // Métodos
@@ -48,6 +61,10 @@ namespace ORBITAL.Dominio.Entidades
 
             this.activa = false;
             this.fechaLiberacion = DateTime.Now;
+            if (this.recurso != null)
+            {
+                this.recurso.Liberar();
+            }
         }
 
         public bool EstaActiva()

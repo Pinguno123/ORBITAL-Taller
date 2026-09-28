@@ -1,4 +1,5 @@
-﻿using ORBITAL.Dominio.Enumeraciones;
+using ORBITAL.Dominio.Enumeraciones;
+using ORBITAL.Dominio.Excepciones;
 using ORBITAL.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,10 @@ namespace ORBITAL.Dominio.Entidades
         // Métodos públicos
         public void Asignar(Mision mision)
         {
-            // Falta la lógica básica para cambiar el estado al asignarse a una misión
+            if (!EstaDisponible())
+            {
+                throw new RecursoNoDisponibleException($"El recurso {codigo} ({modelo}) no se encuentra disponible. Estado actual: {estado}.");
+            }
             this.estado = EstadoRecurso.Asignado;
         }
 
@@ -62,7 +66,7 @@ namespace ORBITAL.Dominio.Entidades
 
         public override string ToString()
         {
-            return "Recurso: " + modelo + " [" + codigo + "] - Estado: " + estado;
+            return $"{codigo} | {modelo} | {estado}";
         }
     }
 }
