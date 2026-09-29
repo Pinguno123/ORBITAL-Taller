@@ -136,8 +136,12 @@ namespace ORBITAL.Dominio.Entidades
 
             this.estado = EstadoMision.EnEjecucion;
 
-            // Asegurar que todos los recursos asignados reflejen el estado Asignado
-            foreach (var recurso in recursos)
+            // Asegurar que todos los recursos asignados activamente reflejen el estado Asignado
+            var recursosActivos = asignaciones != null && asignaciones.Count > 0
+                ? asignaciones.Where(a => a.EstaActiva() && a.Recurso != null).Select(a => a.Recurso).ToList()
+                : recursos;
+
+            foreach (var recurso in recursosActivos)
             {
                 if (recurso.Estado == EstadoRecurso.Disponible)
                 {
@@ -217,12 +221,16 @@ namespace ORBITAL.Dominio.Entidades
             if (!responsable.EstaActivo())
                 throw new MisionInvalidaException($"Protocolo de seguridad ORBITA: El responsable {responsable.NombreUsuario} no se encuentra activo.");
 
-            // 4. Contener al menos un recurso
-            if (recursos == null || recursos.Count == 0)
+            // 4. Contener al menos un recurso activo
+            var recursosActivos = asignaciones != null && asignaciones.Count > 0
+                ? asignaciones.Where(a => a.EstaActiva() && a.Recurso != null).Select(a => a.Recurso).ToList()
+                : recursos;
+
+            if (recursosActivos == null || recursosActivos.Count == 0)
                 throw new MisionInvalidaException("Protocolo de seguridad ORBITA: La misión debe contener al menos un recurso asignado.");
 
             // 5. Ningún recurso en mantenimiento
-            foreach (var recurso in recursos)
+            foreach (var recurso in recursosActivos)
             {
                 if (recurso.Estado == EstadoRecurso.Mantenimiento)
                 {
@@ -239,9 +247,12 @@ namespace ORBITAL.Dominio.Entidades
             if (asignaciones != null && asignaciones.Count > 0)
             {
                 decimal total = 0;
+                // Si la misión tiene asignaciones activas, calculamos sobre las activas.
+                // Si la misión no tiene activas (ej. misión Finalizada o Cancelada), calculamos sobre el historial completo de asignaciones.
+                bool tieneActivas = asignaciones.Any(a => a.EstaActiva());
                 foreach (var asig in asignaciones)
                 {
-                    if (asig.EstaActiva() && asig.Recurso != null)
+                    if (asig.Recurso != null && (!tieneActivas || asig.EstaActiva()))
                     {
                         total += asig.CalcularCosto();
                     }

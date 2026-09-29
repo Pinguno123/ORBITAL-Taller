@@ -564,19 +564,24 @@ namespace ORBITAL
                         Console.WriteLine($"Estado: {m.Estado} | Prioridad: {m.Prioridad}");
                         Console.WriteLine($"Fechas: {m.FechaInicio:yyyy-MM-dd} al {m.FechaFinEstimada:yyyy-MM-dd}");
                         Console.WriteLine($"Responsable: {(m.Responsable != null ? m.Responsable.NombreUsuario : "Sin asignar")}");
-                        Console.WriteLine($"Recursos asignados ({m.Recursos.Count}):");
+                        string encabezadoRecursos = (m.Estado == EstadoMision.Finalizada || m.Estado == EstadoMision.Cancelada)
+                            ? $"Recursos utilizados históricamente ({m.Recursos.Count}):"
+                            : $"Recursos asignados ({m.Recursos.Count}):";
+                        Console.WriteLine(encabezadoRecursos);
                         if (m.Recursos.Count == 0)
                         {
-                            Console.WriteLine("   (Sin recursos asignados)");
+                            Console.WriteLine("   (Sin recursos registrados)");
                         }
                         else
                         {
                             foreach (var r in m.Recursos)
                             {
-                                var asig = m.Asignaciones.FirstOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id && a.EstaActiva());
-                            string unidad = r is Dron ? "horas de vuelo" : (r is RoverTerrestre ? "km" : "días");
-                            string detalleUso = asig != null ? $" | Uso asignado: {asig.CantidadOperacion:N2} {unidad}" : "";
-                            Console.WriteLine($"   * {r}{detalleUso}");
+                                var asig = m.Asignaciones.FirstOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id && a.EstaActiva())
+                                        ?? m.Asignaciones.LastOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id);
+                                string unidad = r is Dron ? "horas de vuelo" : (r is RoverTerrestre ? "km" : "días");
+                                string detalleUso = asig != null ? $" | Uso asignado: {asig.CantidadOperacion:N2} {unidad}" : "";
+                                string estadoAsig = asig != null ? (asig.EstaActiva() ? " [ACTIVO]" : " [LIBERADO/HISTÓRICO]") : "";
+                                Console.WriteLine($"   * {r}{detalleUso}{estadoAsig}");
                             }
                         }
                     }
@@ -878,29 +883,40 @@ namespace ORBITAL
                     return;
                 }
 
-                if (mision.Recursos.Count == 0)
+                if (mision.Estado == EstadoMision.Finalizada || mision.Estado == EstadoMision.Cancelada)
                 {
-                    Console.WriteLine("Esta misión no tiene recursos asignados actualmente.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"[DENEGADO] No se pueden retirar recursos de una misión en estado {mision.Estado} (sus recursos ya fueron liberados).");
+                    Console.ResetColor();
                     Pausar();
                     return;
                 }
 
-                Console.WriteLine("\nRecursos asignados a esta misión:");
-                foreach (var r in mision.Recursos)
+                var asignacionesActivas = mision.Asignaciones.Where(a => a.EstaActiva() && a.Recurso != null).ToList();
+                if (asignacionesActivas.Count == 0)
                 {
-                    Console.WriteLine($"  * [{r.Id}] {r}");
+                    Console.WriteLine("Esta misión no tiene recursos asignados activamente en este momento.");
+                    Pausar();
+                    return;
+                }
+
+                Console.WriteLine("\nRecursos actualmente asignados a esta misión:");
+                foreach (var a in asignacionesActivas)
+                {
+                    Console.WriteLine($"  * [{a.Recurso.Id}] {a.Recurso}");
                 }
 
                 string codigoRecurso = LeerTextoObligatorio("\nIngrese el código del recurso a retirar: ", 20);
-                var recurso = mision.Recursos.FirstOrDefault(r => r.Codigo.Equals(codigoRecurso, StringComparison.OrdinalIgnoreCase));
+                var asigSeleccionada = asignacionesActivas.FirstOrDefault(a => a.Recurso.Codigo.Equals(codigoRecurso, StringComparison.OrdinalIgnoreCase));
 
-                if (recurso == null)
+                if (asigSeleccionada == null)
                 {
-                    Console.WriteLine("El recurso no pertenece a la misión seleccionada.");
+                    Console.WriteLine("El recurso no pertenece o no se encuentra activo en la misión seleccionada.");
                     Pausar();
                     return;
                 }
 
+                var recurso = asigSeleccionada.Recurso;
                 mision.RetirarRecurso(recurso);
                 asignacionRepo.LiberarRecursoDeMision(mision.Id, recurso.Id);
 
@@ -1132,28 +1148,36 @@ namespace ORBITAL
                 decimal dias = (decimal)Math.Max(1, Math.Ceiling((mision.FechaFinEstimada - mision.FechaInicio).TotalDays));
                 Console.WriteLine($"Duración estimada base: {dias} día(s)");
 
-                Console.WriteLine($"\nRecursos asignados ({mision.Recursos.Count}):");
+                string encabezadoRecursos = (mision.Estado == EstadoMision.Finalizada || mision.Estado == EstadoMision.Cancelada)
+                    ? $"\nRecursos y operaciones históricas registradas ({mision.Recursos.Count}):"
+                    : $"\nRecursos asignados ({mision.Recursos.Count}):";
+                Console.WriteLine(encabezadoRecursos);
                 if (mision.Recursos.Count == 0)
                 {
-                    Console.WriteLine("   (No tiene recursos asignados)");
+                    Console.WriteLine("   (No tiene recursos registrados)");
                 }
                 else
                 {
                     foreach (var r in mision.Recursos)
                     {
-                        var asig = mision.Asignaciones.FirstOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id && a.EstaActiva());
+                        var asig = mision.Asignaciones.FirstOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id && a.EstaActiva())
+                                ?? mision.Asignaciones.LastOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id);
                         decimal cantidadUso = asig != null ? asig.CantidadOperacion : dias;
                         decimal costoIndividual = asig != null ? asig.CalcularCosto() : r.CalcularCostoOperacion(cantidadUso);
                         string unidad = r is Dron ? "horas de vuelo" : (r is RoverTerrestre ? "km" : "días");
-                        Console.WriteLine($"  * {r.Codigo} ({r.Modelo}) [{r.GetType().Name}] -> Costo ({cantidadUso:N2} {unidad}): ${costoIndividual:N2}");
+                        string estadoAsig = asig != null ? (asig.EstaActiva() ? " [ACTIVA]" : " [HISTÓRICA/FINALIZADA]") : "";
+                        Console.WriteLine($"  * {r.Codigo} ({r.Modelo}) [{r.GetType().Name}] -> Costo ({cantidadUso:N2} {unidad}){estadoAsig}: ${costoIndividual:N2}");
                     }
                 }
 
                 decimal total = mision.CalcularCostoEstimado();
 
+                string etiquetaCosto = (mision.Estado == EstadoMision.Finalizada)
+                    ? " COSTO TOTAL HISTÓRICO DE OPERACIÓN: $"
+                    : " COSTO TOTAL ESTIMADO DE LA MISIÓN: $";
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"\n==================================================");
-                Console.WriteLine($" COSTO TOTAL ESTIMADO DE LA MISIÓN: ${total:N2}");
+                Console.WriteLine($"{etiquetaCosto}{total:N2}");
                 Console.WriteLine($"==================================================");
                 Console.ResetColor();
             }

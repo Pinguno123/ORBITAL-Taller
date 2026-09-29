@@ -316,14 +316,14 @@ namespace ORBITAL.Datos.Repositorios
                 resp
             );
 
-            // Cargar recursos y asignaciones activos de la misión
-            var asignacionesActivas = efM.asignacion_recurso
-                .Where(a => a.activa)
-                .ToList();
+            // Cargar todas las asignaciones (históricas y activas) relacionadas con la misión
+            var todasAsignaciones = efM.asignacion_recurso != null
+                ? efM.asignacion_recurso.ToList()
+                : new List<asignacion_recurso>();
 
-            if (asignacionesActivas.Count > 0)
+            if (todasAsignaciones.Count > 0)
             {
-                var recursoIds = asignacionesActivas.Select(a => a.recurso_id).ToList();
+                var recursoIds = todasAsignaciones.Select(a => a.recurso_id).Distinct().ToList();
                 var detalles = db.vw_recurso_detalle
                     .AsNoTracking()
                     .Where(d => recursoIds.Contains(d.id))
@@ -331,7 +331,7 @@ namespace ORBITAL.Datos.Repositorios
 
                 decimal duracionDias = (decimal)Math.Max(1, Math.Ceiling((efM.fecha_fin_estimada - efM.fecha_inicio).TotalDays));
 
-                foreach (var asig in asignacionesActivas)
+                foreach (var asig in todasAsignaciones)
                 {
                     var det = detalles.FirstOrDefault(d => d.id == asig.recurso_id);
                     if (det != null)
