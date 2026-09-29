@@ -497,3 +497,11 @@ SELECT * FROM vw_recurso_detalle ORDER BY codigo;
 SELECT * FROM asignacion_recurso ORDER BY id;
 SELECT * FROM vw_asignaciones_activas ORDER BY codigo_mision, codigo_recurso;
 GO
+
+USE orbita_control;
+IF COL_LENGTH('dbo.asignacion_recurso', 'cantidad_operacion') IS NULL
+BEGIN
+    ALTER TABLE dbo.asignacion_recurso 
+    ADD cantidad_operacion DECIMAL(10,2) NOT NULL CONSTRAINT DF_asig_cantidad_operacion DEFAULT 1;
+END
+GO
