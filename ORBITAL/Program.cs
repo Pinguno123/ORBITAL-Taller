@@ -13,19 +13,34 @@ namespace ORBITAL
 {
     internal class Program
     {
-        private static readonly SesionUsuario sesion = SesionUsuario.Instancia;
-        private static readonly UsuarioRepositorio usuarioRepo = new UsuarioRepositorio();
-        private static readonly RecursoRepositorio recursoRepo = new RecursoRepositorio();
-        private static readonly MisionRepositorio misionRepo = new MisionRepositorio();
-        private static readonly AsignacionRepositorio asignacionRepo = new AsignacionRepositorio();
+        private static readonly SesionUsuario sesion =
+            SesionUsuario.Instancia;
+
+        private static readonly UsuarioRepositorio
+            usuarioRepo =
+                new UsuarioRepositorio();
+
+        private static readonly RecursoRepositorio
+            recursoRepo =
+                new RecursoRepositorio();
+
+        private static readonly MisionRepositorio
+            misionRepo =
+                new MisionRepositorio();
+
+        private static readonly AsignacionRepositorio
+            asignacionRepo =
+                new AsignacionRepositorio();
 
         static void Main(string[] args)
         {
-            Console.Title = "ORBITA Control - Centro de Control de Misiones Científicas";
+            Console.Title =
+                "ORBITA Control - Centro de Control de Misiones Científicas";
 
             while (true)
             {
-                if (sesion.ObtenerUsuarioActual() == null)
+                if (sesion.ObtenerUsuarioActual()
+                    == null)
                 {
                     MostrarPantallaLogin();
                 }
@@ -42,6 +57,7 @@ namespace ORBITAL
         {
             LimpiarConsola();
             DibujarBannerORBITA();
+
             MostrarMenuEnMarco(
                 "Credenciales de acceso predeterminadas:",
                 ConsoleColor.Magenta,
@@ -51,22 +67,43 @@ namespace ORBITAL
             );
 
             Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("  ► ");
-            Console.ResetColor();
-            Console.Write("Ingrese nombre de usuario (o '0' / ESC para salir): ");
-            string usuario = LeerEntrada();
 
-            if (usuario == null || usuario == "0")
+            Console.ForegroundColor =
+                ConsoleColor.Yellow;
+
+            Console.Write("  ► ");
+
+            Console.ResetColor();
+
+            Console.Write(
+                "Ingrese nombre de usuario " +
+                "(o '0' / ESC para salir): "
+            );
+
+            string usuario =
+                LeerEntrada();
+
+            if (usuario == null ||
+                usuario == "0")
             {
                 Environment.Exit(0);
             }
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor =
+                ConsoleColor.Yellow;
+
             Console.Write("  ► ");
+
             Console.ResetColor();
-            Console.Write("Ingrese contraseña (o ESC para volver): ");
-            string contrasena = LeerContrasenaOculta();
+
+            Console.Write(
+                "Ingrese contraseña " +
+                "(o ESC para volver): "
+            );
+
+            string contrasena =
+                LeerContrasenaOculta();
+
             if (contrasena == null)
             {
                 return;
@@ -74,57 +111,114 @@ namespace ORBITAL
 
             try
             {
-                bool loginExitoso = sesion.IniciarSesion(usuario, contrasena);
+                bool loginExitoso =
+                    sesion.IniciarSesion(
+                        usuario,
+                        contrasena
+                    );
 
                 if (loginExitoso)
                 {
-                    Usuario actual = sesion.ObtenerUsuarioActual();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"\n[ÉXITO] Bienvenido/a, {actual.NombreUsuario} ({actual.Rol}).");
+                    Usuario actual =
+                        sesion
+                            .ObtenerUsuarioActual();
+
+                    Console.ForegroundColor =
+                        ConsoleColor.Green;
+
+                    Console.WriteLine(
+                        $"\n[ÉXITO] Bienvenido/a, " +
+                        $"{actual.NombreUsuario} " +
+                        $"({actual.Rol})."
+                    );
+
                     Console.ResetColor();
+
                     Pausar();
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\n[ERROR] Credenciales incorrectas o usuario inactivo.");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        "\n[ERROR] Credenciales " +
+                        "incorrectas o usuario " +
+                        "inactivo."
+                    );
+
                     Console.ResetColor();
+
                     Pausar();
                 }
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR DE ACCESO A DATOS] No se pudo conectar a la base de datos: {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR DE ACCESO A DATOS] " +
+                    $"No se pudo conectar a la " +
+                    $"base de datos: {ex.Message}"
+                );
+
                 Console.ResetColor();
+
                 Pausar();
             }
         }
 
-        private static string LeerContrasenaOculta()
+        private static string
+            LeerContrasenaOculta()
         {
             string pass = "";
+
             ConsoleKeyInfo key;
+
             do
             {
                 key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.Escape)
+
+                if (key.Key ==
+                    ConsoleKey.Escape)
                 {
                     Console.WriteLine();
                     return null;
                 }
-                if (key.Key != ConsoleKey.Backspace && key.Key != ConsoleKey.Enter)
+
+                if (key.Key !=
+                        ConsoleKey.Backspace &&
+                    key.Key !=
+                        ConsoleKey.Enter)
                 {
                     pass += key.KeyChar;
+
                     Console.Write("*");
                 }
-                else if (key.Key == ConsoleKey.Backspace && pass.Length > 0)
+                else if (
+                    key.Key ==
+                        ConsoleKey.Backspace &&
+                    pass.Length > 0)
                 {
-                    pass = pass.Substring(0, pass.Length - 1);
-                    Console.Write("\b \b");
+                    pass =
+                        pass.Substring(
+                            0,
+                            pass.Length - 1
+                        );
+
+                    Console.Write(
+                        "\b \b"
+                    );
                 }
-            } while (key.Key != ConsoleKey.Enter);
+            }
+            while (
+                key.Key !=
+                ConsoleKey.Enter
+            );
+
             Console.WriteLine();
+
             return pass;
         }
 
@@ -132,9 +226,11 @@ namespace ORBITAL
 
         #region Menú Principal por Roles
 
-        private static void MostrarMenuPrincipal()
+        private static void
+            MostrarMenuPrincipal()
         {
-            Usuario actual = sesion.ObtenerUsuarioActual();
+            Usuario actual =
+                sesion.ObtenerUsuarioActual();
 
             LimpiarConsola();
             DibujarBannerORBITA();
@@ -145,21 +241,26 @@ namespace ORBITAL
                 case RolUsuario.Administrador:
                     MenuAdministrador();
                     break;
+
                 case RolUsuario.Coordinador:
                     MenuCoordinador();
                     break;
+
                 case RolUsuario.Auditor:
                     MenuAuditor();
                     break;
             }
         }
 
-        private static void MenuAdministrador()
+        private static void
+            MenuAdministrador()
         {
             MostrarMenuEnMarco(
                 "--- MÓDULO ADMINISTRADOR (ACCESO TOTAL) ---",
                 ConsoleColor.Cyan,
+
                 "@@ GESTIÓN DE MISIONES",
+
                 "1.  Consultar todas las misiones",
                 "2.  Crear nueva misión",
                 "3.  Modificar datos de una misión",
@@ -169,24 +270,38 @@ namespace ORBITAL
                 "7.  Finalizar misión",
                 "8.  Cancelar misión",
                 "9.  Calcular costo estimado de operación de una misión",
+
                 "----------------------------------------------------------------",
+
                 "@@ GESTIÓN DE RECURSOS",
+
                 "10. Consultar todos los recursos",
                 "11. Consultar recursos disponibles",
                 "12. Registrar nuevo recurso (Dron, Rover, Estación)",
                 "13. Modificar datos de un recurso",
                 "14. Cambiar estado de un recurso",
+
                 "----------------------------------------------------------------",
+
                 "@@ ADMINISTRACIÓN Y CONTROL",
+
                 "15. Gestión de usuarios (Consultar, Registrar, Cambiar Estado)",
                 "16. Panel de Control ORBITA (Estadísticas)",
+
                 "----------------------------------------------------------------",
+
                 "@@ SESIÓN",
+
                 "0.  Cerrar sesión (o presione ESC)"
             );
 
-            string opcion = LeerEntradaEstilizada("\nSeleccione una opción: ");
-            if (opcion == null || opcion == "0")
+            string opcion =
+                LeerEntradaEstilizada(
+                    "\nSeleccione una opción: "
+                );
+
+            if (opcion == null ||
+                opcion == "0")
             {
                 sesion.CerrarSesion();
                 return;
@@ -194,35 +309,93 @@ namespace ORBITAL
 
             switch (opcion)
             {
-                case "1": ListarMisiones(); break;
-                case "2": CrearMision(); break;
-                case "3": ModificarMision(); break;
-                case "4": AsignarRecursoAMision(); break;
-                case "5": RetirarRecursoDeMision(); break;
-                case "6": IniciarMision(); break;
-                case "7": FinalizarMision(); break;
-                case "8": CancelarMision(); break;
-                case "9": CalcularCostoMision(); break;
-                case "10": ListarRecursos(soloDisponibles: false); break;
-                case "11": ListarRecursos(soloDisponibles: true); break;
-                case "12": RegistrarRecurso(); break;
-                case "13": ModificarRecurso(); break;
-                case "14": CambiarEstadoRecurso(); break;
-                case "15": GestionUsuarios(); break;
-                case "16": MostrarPanelDeControl(); break;
+                case "1":
+                    ListarMisiones();
+                    break;
+
+                case "2":
+                    CrearMision();
+                    break;
+
+                case "3":
+                    ModificarMision();
+                    break;
+
+                case "4":
+                    AsignarRecursoAMision();
+                    break;
+
+                case "5":
+                    RetirarRecursoDeMision();
+                    break;
+
+                case "6":
+                    IniciarMision();
+                    break;
+
+                case "7":
+                    FinalizarMision();
+                    break;
+
+                case "8":
+                    CancelarMision();
+                    break;
+
+                case "9":
+                    CalcularCostoMision();
+                    break;
+
+                case "10":
+                    ListarRecursos(
+                        soloDisponibles: false
+                    );
+                    break;
+
+                case "11":
+                    ListarRecursos(
+                        soloDisponibles: true
+                    );
+                    break;
+
+                case "12":
+                    RegistrarRecurso();
+                    break;
+
+                case "13":
+                    ModificarRecurso();
+                    break;
+
+                case "14":
+                    CambiarEstadoRecurso();
+                    break;
+
+                case "15":
+                    GestionUsuarios();
+                    break;
+
+                case "16":
+                    MostrarPanelDeControl();
+                    break;
+
                 default:
-                    Console.WriteLine("Opción no válida.");
+                    Console.WriteLine(
+                        "Opción no válida."
+                    );
+
                     Pausar();
                     break;
             }
         }
 
-        private static void MenuCoordinador()
+        private static void
+            MenuCoordinador()
         {
             MostrarMenuEnMarco(
                 "--- MÓDULO COORDINADOR (GESTIÓN DE MISIONES Y RECURSOS) ---",
                 ConsoleColor.Cyan,
+
                 "@@ GESTIÓN DE MISIONES",
+
                 "1.  Consultar misiones",
                 "2.  Crear nueva misión",
                 "3.  Modificar datos de una misión",
@@ -231,17 +404,28 @@ namespace ORBITAL
                 "6.  Iniciar misión (Protocolo de Seguridad ORBITA)",
                 "7.  Finalizar misión",
                 "8.  Calcular costo estimado de operación de una misión",
+
                 "----------------------------------------------------------------",
+
                 "@@ RECURSOS Y CONTROL",
+
                 "9.  Consultar recursos disponibles",
                 "10. Panel de Control ORBITA",
+
                 "----------------------------------------------------------------",
+
                 "@@ SESIÓN",
+
                 "0.  Cerrar sesión (o presione ESC)"
             );
 
-            string opcion = LeerEntradaEstilizada("\nSeleccione una opción: ");
-            if (opcion == null || opcion == "0")
+            string opcion =
+                LeerEntradaEstilizada(
+                    "\nSeleccione una opción: "
+                );
+
+            if (opcion == null ||
+                opcion == "0")
             {
                 sesion.CerrarSesion();
                 return;
@@ -249,43 +433,92 @@ namespace ORBITAL
 
             switch (opcion)
             {
-                case "1": ListarMisiones(); break;
-                case "2": CrearMision(); break;
-                case "3": ModificarMision(); break;
-                case "4": AsignarRecursoAMision(); break;
-                case "5": RetirarRecursoDeMision(); break;
-                case "6": IniciarMision(); break;
-                case "7": FinalizarMision(); break;
-                case "8": CalcularCostoMision(); break;
-                case "9": ListarRecursos(soloDisponibles: true); break;
-                case "10": MostrarPanelDeControl(); break;
+                case "1":
+                    ListarMisiones();
+                    break;
+
+                case "2":
+                    CrearMision();
+                    break;
+
+                case "3":
+                    ModificarMision();
+                    break;
+
+                case "4":
+                    AsignarRecursoAMision();
+                    break;
+
+                case "5":
+                    RetirarRecursoDeMision();
+                    break;
+
+                case "6":
+                    IniciarMision();
+                    break;
+
+                case "7":
+                    FinalizarMision();
+                    break;
+
+                case "8":
+                    CalcularCostoMision();
+                    break;
+
+                case "9":
+                    ListarRecursos(
+                        soloDisponibles: true
+                    );
+                    break;
+
+                case "10":
+                    MostrarPanelDeControl();
+                    break;
+
                 default:
-                    Console.WriteLine("Opción no válida.");
+                    Console.WriteLine(
+                        "Opción no válida."
+                    );
+
                     Pausar();
                     break;
             }
         }
 
-        private static void MenuAuditor()
+        private static void
+            MenuAuditor()
         {
             MostrarMenuEnMarco(
                 "--- MÓDULO AUDITOR (SOLO LECTURA / CONSULTAS) ---",
                 ConsoleColor.Cyan,
+
                 "@@ CONSULTAS GENERALES",
+
                 "1. Consultar todas las misiones",
                 "2. Consultar todos los recursos",
                 "3. Consultar recursos disponibles",
+
                 "----------------------------------------------------------------",
+
                 "@@ AUDITORÍA Y CONTROL",
+
                 "4. Consultar asignaciones activas (Vista auditoría)",
                 "5. Panel de Control ORBITA",
+
                 "----------------------------------------------------------------",
+
                 "@@ SESIÓN",
+
                 "0. Cerrar sesión (o presione ESC)"
             );
 
-            string opcion = LeerEntradaEstilizada("\nSeleccione una opción: ");
-            if (opcion == null || opcion == "0")
+            string opcion =
+                LeerEntradaEstilizada(
+                    "\nSeleccione una opción: "
+                );
+
+            if (opcion == null ||
+                opcion == "0")
             {
                 sesion.CerrarSesion();
                 return;
@@ -293,13 +526,35 @@ namespace ORBITAL
 
             switch (opcion)
             {
-                case "1": ListarMisiones(); break;
-                case "2": ListarRecursos(soloDisponibles: false); break;
-                case "3": ListarRecursos(soloDisponibles: true); break;
-                case "4": ListarAsignacionesActivas(); break;
-                case "5": MostrarPanelDeControl(); break;
+                case "1":
+                    ListarMisiones();
+                    break;
+
+                case "2":
+                    ListarRecursos(
+                        soloDisponibles: false
+                    );
+                    break;
+
+                case "3":
+                    ListarRecursos(
+                        soloDisponibles: true
+                    );
+                    break;
+
+                case "4":
+                    ListarAsignacionesActivas();
+                    break;
+
+                case "5":
+                    MostrarPanelDeControl();
+                    break;
+
                 default:
-                    Console.WriteLine("Opción no válida.");
+                    Console.WriteLine(
+                        "Opción no válida."
+                    );
+
                     Pausar();
                     break;
             }
@@ -309,62 +564,117 @@ namespace ORBITAL
 
         #region Métodos Auxiliares de Validación y Lectura Robusta
 
-        private static string LeerEntrada(string prompt = "")
+        private static string LeerEntrada(
+            string prompt = "")
         {
             if (!string.IsNullOrEmpty(prompt))
+            {
                 Console.Write(prompt);
+            }
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb =
+                new StringBuilder();
+
             while (true)
             {
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.Escape)
+                ConsoleKeyInfo key =
+                    Console.ReadKey(true);
+
+                if (key.Key ==
+                    ConsoleKey.Escape)
                 {
                     Console.WriteLine();
                     return null;
                 }
-                if (key.Key == ConsoleKey.Enter)
+
+                if (key.Key ==
+                    ConsoleKey.Enter)
                 {
                     Console.WriteLine();
-                    return sb.ToString().Trim();
+
+                    return sb
+                        .ToString()
+                        .Trim();
                 }
-                if (key.Key == ConsoleKey.Backspace)
+
+                if (key.Key ==
+                    ConsoleKey.Backspace)
                 {
                     if (sb.Length > 0)
                     {
                         sb.Length--;
-                        Console.Write("\b \b");
+
+                        Console.Write(
+                            "\b \b"
+                        );
                     }
                 }
-                else if (!char.IsControl(key.KeyChar))
+                else if (
+                    !char.IsControl(
+                        key.KeyChar
+                    ))
                 {
-                    sb.Append(key.KeyChar);
-                    Console.Write(key.KeyChar);
+                    sb.Append(
+                        key.KeyChar
+                    );
+
+                    Console.Write(
+                        key.KeyChar
+                    );
                 }
             }
         }
 
-        private static string LeerTextoObligatorio(string prompt, int maxLongitud = 100)
+        private static string
+            LeerTextoObligatorio(
+                string prompt,
+                int maxLongitud = 100)
         {
             while (true)
             {
-                string entrada = LeerEntrada(prompt);
-                if (entrada == null)
-                    throw new OperationCanceledException();
+                string entrada =
+                    LeerEntrada(prompt);
 
-                if (string.IsNullOrWhiteSpace(entrada))
+                if (entrada == null)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("[ERROR] Este campo es obligatorio y no puede quedar vacío.");
+                    throw new
+                        OperationCanceledException();
+                }
+
+                if (string
+                    .IsNullOrWhiteSpace(
+                        entrada
+                    ))
+                {
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        "[ERROR] Este campo es " +
+                        "obligatorio y no puede " +
+                        "quedar vacío."
+                    );
+
                     Console.ResetColor();
+
                     continue;
                 }
 
-                if (entrada.Length > maxLongitud)
+                if (entrada.Length >
+                    maxLongitud)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[ERROR] La longitud no puede superar los {maxLongitud} caracteres (ingresó {entrada.Length}).");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        $"[ERROR] La longitud no " +
+                        $"puede superar los " +
+                        $"{maxLongitud} caracteres " +
+                        $"(ingresó {entrada.Length})."
+                    );
+
                     Console.ResetColor();
+
                     continue;
                 }
 
@@ -372,24 +682,49 @@ namespace ORBITAL
             }
         }
 
-        private static string LeerTextoOpcional(string prompt, string valorActual, int maxLongitud = 100)
+        private static string
+            LeerTextoOpcional(
+                string prompt,
+                string valorActual,
+                int maxLongitud = 100)
         {
             while (true)
             {
-                string entrada = LeerEntrada($"{prompt} [Actual: {valorActual}] (Enter para conservar, ESC para cancelar): ");
-                if (entrada == null)
-                    throw new OperationCanceledException();
+                string entrada =
+                    LeerEntrada(
+                        $"{prompt} [Actual: " +
+                        $"{valorActual}] " +
+                        $"(Enter para conservar, " +
+                        $"ESC para cancelar): "
+                    );
 
-                if (string.IsNullOrEmpty(entrada))
+                if (entrada == null)
+                {
+                    throw new
+                        OperationCanceledException();
+                }
+
+                if (string.IsNullOrEmpty(
+                    entrada))
                 {
                     return valorActual;
                 }
 
-                if (entrada.Length > maxLongitud)
+                if (entrada.Length >
+                    maxLongitud)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[ERROR] La longitud no puede superar los {maxLongitud} caracteres (ingresó {entrada.Length}).");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        $"[ERROR] La longitud no " +
+                        $"puede superar los " +
+                        $"{maxLongitud} caracteres " +
+                        $"(ingresó {entrada.Length})."
+                    );
+
                     Console.ResetColor();
+
                     continue;
                 }
 
@@ -397,167 +732,383 @@ namespace ORBITAL
             }
         }
 
-        private static decimal LeerDecimalPositivo(string prompt, decimal min = 0, decimal max = decimal.MaxValue)
+        private static decimal
+            LeerDecimalPositivo(
+                string prompt,
+                decimal min = 0,
+                decimal max =
+                    decimal.MaxValue)
         {
             while (true)
             {
-                string entrada = LeerEntrada(prompt);
-                if (entrada == null)
-                    throw new OperationCanceledException();
+                string entrada =
+                    LeerEntrada(prompt);
 
-                if (string.IsNullOrEmpty(entrada))
+                if (entrada == null)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("[ERROR] Debe ingresar un valor numérico.");
+                    throw new
+                        OperationCanceledException();
+                }
+
+                if (string.IsNullOrEmpty(
+                    entrada))
+                {
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        "[ERROR] Debe ingresar " +
+                        "un valor numérico."
+                    );
+
                     Console.ResetColor();
+
                     continue;
                 }
 
-                string entradaNormalizada = entrada.Replace(',', '.');
+                string entradaNormalizada =
+                    entrada.Replace(',', '.');
 
-                if (decimal.TryParse(entradaNormalizada, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal resultado))
+                decimal resultado;
+
+                if (decimal.TryParse(
+                    entradaNormalizada,
+                    NumberStyles.Any,
+                    CultureInfo
+                        .InvariantCulture,
+                    out resultado))
                 {
-                    if (resultado < min || resultado > max)
+                    if (resultado < min ||
+                        resultado > max)
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"[ERROR] El número debe estar entre {min} y {max}.");
+                        Console.ForegroundColor =
+                            ConsoleColor.Red;
+
+                        Console.WriteLine(
+                            $"[ERROR] El número debe " +
+                            $"estar entre {min} " +
+                            $"y {max}."
+                        );
+
                         Console.ResetColor();
+
                         continue;
                     }
+
                     return resultado;
                 }
 
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[ERROR] Entrada inválida. Ingrese un número válido (ej. 15.5).");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[ERROR] Entrada inválida. " +
+                    "Ingrese un número válido " +
+                    "(ej. 15.5)."
+                );
+
                 Console.ResetColor();
             }
         }
 
-        private static int LeerEnteroPositivo(string prompt, int min = 1, int max = int.MaxValue)
+        private static int
+            LeerEnteroPositivo(
+                string prompt,
+                int min = 1,
+                int max = int.MaxValue)
         {
             while (true)
             {
-                string entrada = LeerEntrada(prompt);
-                if (entrada == null)
-                    throw new OperationCanceledException();
+                string entrada =
+                    LeerEntrada(prompt);
 
-                if (int.TryParse(entrada, out int resultado))
+                if (entrada == null)
                 {
-                    if (resultado < min || resultado > max)
+                    throw new
+                        OperationCanceledException();
+                }
+
+                int resultado;
+
+                if (int.TryParse(
+                    entrada,
+                    out resultado))
+                {
+                    if (resultado < min ||
+                        resultado > max)
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"[ERROR] Debe ser un número entero entre {min} y {max}.");
+                        Console.ForegroundColor =
+                            ConsoleColor.Red;
+
+                        Console.WriteLine(
+                            $"[ERROR] Debe ser un " +
+                            $"número entero entre " +
+                            $"{min} y {max}."
+                        );
+
                         Console.ResetColor();
+
                         continue;
                     }
+
                     return resultado;
                 }
 
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[ERROR] Entrada inválida. Ingrese un número entero positivo.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[ERROR] Entrada inválida. " +
+                    "Ingrese un número entero " +
+                    "positivo."
+                );
+
                 Console.ResetColor();
             }
         }
 
-        private static DateTime LeerFecha(string prompt, DateTime? fechaMinima = null)
+        private static DateTime LeerFecha(
+            string prompt,
+            DateTime? fechaMinima = null)
         {
             while (true)
             {
-                string entrada = LeerEntrada($"{prompt} (YYYY-MM-DD): ");
-                if (entrada == null)
-                    throw new OperationCanceledException();
+                string entrada =
+                    LeerEntrada(
+                        $"{prompt} (YYYY-MM-DD): "
+                    );
 
-                if (DateTime.TryParseExact(entrada, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fecha))
+                if (entrada == null)
                 {
-                    if (fechaMinima.HasValue && fecha < fechaMinima.Value)
+                    throw new
+                        OperationCanceledException();
+                }
+
+                DateTime fecha;
+
+                if (DateTime.TryParseExact(
+                    entrada,
+                    "yyyy-MM-dd",
+                    CultureInfo
+                        .InvariantCulture,
+                    DateTimeStyles.None,
+                    out fecha))
+                {
+                    if (fechaMinima.HasValue &&
+                        fecha <
+                        fechaMinima.Value)
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"[ERROR] La fecha no puede ser anterior a la fecha de inicio ({fechaMinima.Value:yyyy-MM-dd}).");
+                        Console.ForegroundColor =
+                            ConsoleColor.Red;
+
+                        Console.WriteLine(
+                            $"[ERROR] La fecha no " +
+                            $"puede ser anterior a " +
+                            $"la fecha de inicio " +
+                            $"({fechaMinima.Value:yyyy-MM-dd})."
+                        );
+
                         Console.ResetColor();
+
                         continue;
                     }
+
                     return fecha;
                 }
 
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[ERROR] Formato de fecha incorrecto. Debe usar estrictamente el formato YYYY-MM-DD (ejemplo: 2026-05-15).");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[ERROR] Formato de fecha " +
+                    "incorrecto. Debe usar " +
+                    "estrictamente el formato " +
+                    "YYYY-MM-DD " +
+                    "(ejemplo: 2026-05-15)."
+                );
+
                 Console.ResetColor();
             }
         }
 
-        private static PrioridadMision LeerPrioridad()
+        private static PrioridadMision
+            LeerPrioridad()
         {
             while (true)
             {
-                Console.WriteLine("Prioridad de la misión (o presione ESC para cancelar):");
-                Console.WriteLine("  0. Baja");
-                Console.WriteLine("  1. Media");
-                Console.WriteLine("  2. Alta");
+                Console.WriteLine(
+                    "Prioridad de la misión " +
+                    "(o presione ESC para cancelar):"
+                );
 
-                string entrada = LeerEntrada("Seleccione prioridad (0-2): ");
+                Console.WriteLine(
+                    "  0. Baja"
+                );
+
+                Console.WriteLine(
+                    "  1. Media"
+                );
+
+                Console.WriteLine(
+                    "  2. Alta"
+                );
+
+                string entrada =
+                    LeerEntrada(
+                        "Seleccione prioridad " +
+                        "(0-2): "
+                    );
+
                 if (entrada == null)
-                    throw new OperationCanceledException();
+                {
+                    throw new
+                        OperationCanceledException();
+                }
 
-                entrada = entrada.ToLower();
+                entrada =
+                    entrada.ToLower();
+
                 switch (entrada)
                 {
                     case "0":
                     case "baja":
-                        return PrioridadMision.Baja;
+                        return
+                            PrioridadMision.Baja;
+
                     case "1":
                     case "media":
-                        return PrioridadMision.Media;
+                        return
+                            PrioridadMision.Media;
+
                     case "2":
                     case "alta":
-                        return PrioridadMision.Alta;
+                        return
+                            PrioridadMision.Alta;
+
                     default:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("[ERROR] Opción de prioridad inválida. Debe seleccionar 0 (Baja), 1 (Media) o 2 (Alta).");
+                        Console.ForegroundColor =
+                            ConsoleColor.Red;
+
+                        Console.WriteLine(
+                            "[ERROR] Opción de " +
+                            "prioridad inválida. " +
+                            "Debe seleccionar " +
+                            "0 (Baja), 1 (Media) " +
+                            "o 2 (Alta)."
+                        );
+
                         Console.ResetColor();
+
                         break;
                 }
             }
         }
 
-        private static RolUsuario LeerRolUsuario()
+        private static RolUsuario
+            LeerRolUsuario()
         {
             while (true)
             {
-                Console.WriteLine("Roles disponibles (o presione ESC para cancelar):");
-                Console.WriteLine("  0. Administrador");
-                Console.WriteLine("  1. Coordinador");
-                Console.WriteLine("  2. Auditor");
+                Console.WriteLine(
+                    "Roles disponibles " +
+                    "(o presione ESC para cancelar):"
+                );
 
-                string entrada = LeerEntrada("Seleccione rol (0-2): ");
+                Console.WriteLine(
+                    "  0. Administrador"
+                );
+
+                Console.WriteLine(
+                    "  1. Coordinador"
+                );
+
+                Console.WriteLine(
+                    "  2. Auditor"
+                );
+
+                string entrada =
+                    LeerEntrada(
+                        "Seleccione rol (0-2): "
+                    );
+
                 if (entrada == null)
-                    throw new OperationCanceledException();
+                {
+                    throw new
+                        OperationCanceledException();
+                }
 
                 switch (entrada)
                 {
-                    case "0": return RolUsuario.Administrador;
-                    case "1": return RolUsuario.Coordinador;
-                    case "2": return RolUsuario.Auditor;
+                    case "0":
+                        return
+                            RolUsuario
+                                .Administrador;
+
+                    case "1":
+                        return
+                            RolUsuario
+                                .Coordinador;
+
+                    case "2":
+                        return
+                            RolUsuario
+                                .Auditor;
+
                     default:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("[ERROR] Opción de rol inválida. Ingrese 0, 1 o 2.");
+                        Console.ForegroundColor =
+                            ConsoleColor.Red;
+
+                        Console.WriteLine(
+                            "[ERROR] Opción de rol " +
+                            "inválida. Ingrese " +
+                            "0, 1 o 2."
+                        );
+
                         Console.ResetColor();
+
                         break;
                 }
             }
         }
 
-        private static bool LeerConfirmacion(string prompt)
+        private static bool
+            LeerConfirmacion(
+                string prompt)
         {
             while (true)
             {
-                string respuesta = LeerEntrada($"{prompt} (s/n, o presione ESC para cancelar): ");
-                if (respuesta == null)
-                    throw new OperationCanceledException();
+                string respuesta =
+                    LeerEntrada(
+                        $"{prompt} " +
+                        $"(s/n, o presione ESC " +
+                        $"para cancelar): "
+                    );
 
-                respuesta = respuesta.ToLower();
-                if (respuesta == "s" || respuesta == "si") return true;
-                if (respuesta == "n" || respuesta == "no") return false;
-                Console.WriteLine("Responda 's' para sí o 'n' para no.");
+                if (respuesta == null)
+                {
+                    throw new
+                        OperationCanceledException();
+                }
+
+                respuesta =
+                    respuesta.ToLower();
+
+                if (respuesta == "s" ||
+                    respuesta == "si")
+                {
+                    return true;
+                }
+
+                if (respuesta == "n" ||
+                    respuesta == "no")
+                {
+                    return false;
+                }
+
+                Console.WriteLine(
+                    "Responda 's' para sí " +
+                    "o 'n' para no."
+                );
             }
         }
 
@@ -565,46 +1116,141 @@ namespace ORBITAL
 
         #region Operaciones de Misiones
 
-        private static void ListarMisiones()
+        private static void
+            ListarMisiones()
         {
             LimpiarConsola();
-            MostrarTitulo("=== LISTADO DE MISIONES REGISTRADAS ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== LISTADO DE MISIONES REGISTRADAS ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                var misiones = misionRepo.ObtenerTodas();
+                var misiones =
+                    misionRepo.ObtenerTodas();
+
                 if (misiones.Count == 0)
                 {
-                    Console.WriteLine("No hay misiones registradas.");
+                    Console.WriteLine(
+                        "No hay misiones registradas."
+                    );
                 }
                 else
                 {
-                    foreach (var m in misiones)
+                    foreach (
+                        var m in misiones)
                     {
-                        Console.WriteLine($"\n--------------------------------------------------");
-                        Console.WriteLine($"[ID: {m.Id}] Código: {m.Codigo} | Nombre: {m.Nombre}");
-                        Console.WriteLine($"Descripción: {m.Descripcion}");
-                        Console.WriteLine($"Estado: {m.Estado} | Prioridad: {m.Prioridad}");
-                        Console.WriteLine($"Fechas: {m.FechaInicio:yyyy-MM-dd} al {m.FechaFinEstimada:yyyy-MM-dd}");
-                        Console.WriteLine($"Responsable: {(m.Responsable != null ? m.Responsable.NombreUsuario : "Sin asignar")}");
-                        string encabezadoRecursos = (m.Estado == EstadoMision.Finalizada || m.Estado == EstadoMision.Cancelada)
-                            ? $"Recursos utilizados históricamente ({m.Recursos.Count}):"
-                            : $"Recursos asignados ({m.Recursos.Count}):";
-                        Console.WriteLine(encabezadoRecursos);
+                        Console.WriteLine(
+                            "\n--------------------------------------------------"
+                        );
+
+                        Console.WriteLine(
+                            $"[ID: {m.Id}] Código: " +
+                            $"{m.Codigo} | Nombre: " +
+                            $"{m.Nombre}"
+                        );
+
+                        Console.WriteLine(
+                            $"Descripción: " +
+                            $"{m.Descripcion}"
+                        );
+
+                        Console.WriteLine(
+                            $"Estado: {m.Estado} | " +
+                            $"Prioridad: " +
+                            $"{m.Prioridad}"
+                        );
+
+                        Console.WriteLine(
+                            $"Fechas: " +
+                            $"{m.FechaInicio:yyyy-MM-dd} " +
+                            $"al " +
+                            $"{m.FechaFinEstimada:yyyy-MM-dd}"
+                        );
+
+                        Console.WriteLine(
+                            $"Responsable: " +
+                            $"{(m.Responsable != null " +
+                                "? m.Responsable.NombreUsuario " +
+                                ": \"Sin asignar\")}"
+                        );
+
+                        string encabezadoRecursos =
+                            m.Estado ==
+                                EstadoMision.Finalizada ||
+                            m.Estado ==
+                                EstadoMision.Cancelada
+                                ? $"Recursos utilizados " +
+                                  $"históricamente " +
+                                  $"({m.Recursos.Count}):"
+                                : $"Recursos asignados " +
+                                  $"({m.Recursos.Count}):";
+
+                        Console.WriteLine(
+                            encabezadoRecursos
+                        );
+
                         if (m.Recursos.Count == 0)
                         {
-                            Console.WriteLine("   (Sin recursos registrados)");
+                            Console.WriteLine(
+                                "   (Sin recursos registrados)"
+                            );
                         }
                         else
                         {
-                            foreach (var r in m.Recursos)
+                            foreach (
+                                var r in
+                                    m.Recursos)
                             {
-                                var asig = m.Asignaciones.FirstOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id && a.EstaActiva())
-                                        ?? m.Asignaciones.LastOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id);
-                                string unidad = r is Dron ? "horas de vuelo" : (r is RoverTerrestre ? "km" : "días");
-                                string detalleUso = asig != null ? $" | Uso asignado: {asig.CantidadOperacion:N2} {unidad}" : "";
-                                string estadoAsig = asig != null ? (asig.EstaActiva() ? " [ACTIVO]" : " [LIBERADO/HISTÓRICO]") : "";
-                                Console.WriteLine($"   * {r}{detalleUso}{estadoAsig}");
+                                var asig =
+                                    m.Asignaciones
+                                        .FirstOrDefault(
+                                            a =>
+                                                a.Recurso !=
+                                                    null &&
+                                                a.Recurso.Id ==
+                                                    r.Id &&
+                                                a.EstaActiva()
+                                        )
+                                    ??
+                                    m.Asignaciones
+                                        .LastOrDefault(
+                                            a =>
+                                                a.Recurso !=
+                                                    null &&
+                                                a.Recurso.Id ==
+                                                    r.Id
+                                        );
+
+                                string unidad =
+                                    r is Dron
+                                        ? "horas de vuelo"
+                                        : r is
+                                            RoverTerrestre
+                                            ? "km"
+                                            : "días";
+
+                                string detalleUso =
+                                    asig != null
+                                        ? $" | Uso asignado: " +
+                                          $"{asig.CantidadOperacion:N2} " +
+                                          $"{unidad}"
+                                        : "";
+
+                                string estadoAsig =
+                                    asig != null
+                                        ? asig.EstaActiva()
+                                            ? " [ACTIVO]"
+                                            : " [LIBERADO/HISTÓRICO]"
+                                        : "";
+
+                                Console.WriteLine(
+                                    $"   * {r}" +
+                                    $"{detalleUso}" +
+                                    $"{estadoAsig}"
+                                );
                             }
                         }
                     }
@@ -612,590 +1258,1329 @@ namespace ORBITAL
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Error al consultar misiones: {ex.Message}");
-                Console.ResetColor();
-            }
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
 
-            Pausar();
-        }
-
-        private static void CrearMision()
-        {
-            if (!sesion.TienePermiso(RolUsuario.Coordinador) && !sesion.TienePermiso(RolUsuario.Administrador))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Su rol no tiene permisos para crear misiones.");
-                Console.ResetColor();
-                Pausar();
-                return;
-            }
-
-            LimpiarConsola();
-            MostrarTitulo("=== CREAR NUEVA MISIÓN ===", ConsoleColor.Yellow);
-
-            try
-            {
-                string codigo = LeerTextoObligatorio("Código de la misión (ej. MIS-005, máx 20 caracteres): ", 20);
-                string nombre = LeerTextoObligatorio("Nombre de la misión (máx 100 caracteres): ", 100);
-                string descripcion = LeerTextoObligatorio("Descripción de la misión (máx 500 caracteres): ", 500);
-
-                DateTime fechaInicio = LeerFecha("Fecha de inicio");
-                DateTime fechaFin = LeerFecha("Fecha fin estimada", fechaMinima: fechaInicio);
-
-                PrioridadMision prioridad = LeerPrioridad();
-                Usuario responsable = sesion.ObtenerUsuarioActual();
-
-                var nuevaMision = new Mision(
-                    codigo,
-                    nombre,
-                    descripcion,
-                    fechaInicio,
-                    fechaFin,
-                    prioridad,
-                    responsable
+                Console.WriteLine(
+                    $"Error al consultar " +
+                    $"misiones: {ex.Message}"
                 );
 
-                misionRepo.Crear(nuevaMision);
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Misión '{nuevaMision.Codigo}' registrada correctamente en la base de datos.");
-                Console.ResetColor();
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-            catch (MisionInvalidaException mex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[VALIDACIÓN] {mex.Message}");
-                Console.ResetColor();
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] No se pudo crear la misión: {ex.Message}");
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void ModificarMision()
+        private static void
+            CrearMision()
         {
-            if (!sesion.TienePermiso(RolUsuario.Coordinador) && !sesion.TienePermiso(RolUsuario.Administrador))
+            if (!sesion.TienePermiso(
+                    RolUsuario.Coordinador) &&
+                !sesion.TienePermiso(
+                    RolUsuario.Administrador))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Su rol no tiene permisos para modificar misiones.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Su rol no tiene " +
+                    "permisos para crear misiones."
+                );
+
                 Console.ResetColor();
+
                 Pausar();
                 return;
             }
 
             LimpiarConsola();
-            MostrarTitulo("=== MODIFICAR DATOS DE UNA MISIÓN ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== CREAR NUEVA MISIÓN ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                string codigo = LeerTextoObligatorio("Código de la misión a modificar: ", 20);
-                var mision = misionRepo.ObtenerPorCodigo(codigo);
+                string codigo =
+                    LeerTextoObligatorio(
+                        "Código de la misión " +
+                        "(ej. MIS-005, máx 20 caracteres): ",
+                        20
+                    );
 
-                if (mision == null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Misión no encontrada en el sistema.");
-                    Console.ResetColor();
-                    Pausar();
-                    return;
-                }
+                string nombre =
+                    LeerTextoObligatorio(
+                        "Nombre de la misión " +
+                        "(máx 100 caracteres): ",
+                        100
+                    );
 
-                if (mision.Estado == EstadoMision.Finalizada || mision.Estado == EstadoMision.Cancelada)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[DENEGADO] No se pueden modificar misiones en estado {mision.Estado}.");
-                    Console.ResetColor();
-                    Pausar();
-                    return;
-                }
+                string descripcion =
+                    LeerTextoObligatorio(
+                        "Descripción de la misión " +
+                        "(máx 500 caracteres): ",
+                        500
+                    );
 
-                Console.WriteLine($"\nMisión actual: {mision.Nombre} [{mision.Codigo}]");
-                Console.WriteLine($"Descripción: {mision.Descripcion}");
-                Console.WriteLine($"Fechas: {mision.FechaInicio:yyyy-MM-dd} al {mision.FechaFinEstimada:yyyy-MM-dd}");
-                Console.WriteLine($"Prioridad: {mision.Prioridad} | Estado: {mision.Estado}\n");
+                DateTime fechaInicio =
+                    LeerFecha(
+                        "Fecha de inicio"
+                    );
 
-                mision.Nombre = LeerTextoOpcional("Nuevo nombre", mision.Nombre, 100);
-                mision.Descripcion = LeerTextoOpcional("Nueva descripción", mision.Descripcion, 500);
+                DateTime fechaFin =
+                    LeerFecha(
+                        "Fecha fin estimada",
+                        fechaMinima:
+                            fechaInicio
+                    );
 
-                if (LeerConfirmacion("¿Desea modificar las fechas de la misión?"))
-                {
-                    DateTime nuevaInicio = LeerFecha("Nueva fecha de inicio");
-                    DateTime nuevaFin = LeerFecha("Nueva fecha fin estimada", fechaMinima: nuevaInicio);
-                    mision.FechaInicio = nuevaInicio;
-                    mision.FechaFinEstimada = nuevaFin;
-                }
+                PrioridadMision prioridad =
+                    LeerPrioridad();
 
-                if (LeerConfirmacion("¿Desea cambiar la prioridad de la misión?"))
-                {
-                    mision.Prioridad = LeerPrioridad();
-                }
+                Usuario responsable =
+                    sesion
+                        .ObtenerUsuarioActual();
 
-                misionRepo.Actualizar(mision);
+                var nuevaMision =
+                    new Mision(
+                        codigo,
+                        nombre,
+                        descripcion,
+                        fechaInicio,
+                        fechaFin,
+                        prioridad,
+                        responsable
+                    );
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Misión '{mision.Codigo}' actualizada exitosamente.");
+                misionRepo.Crear(
+                    nuevaMision
+                );
+
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Misión " +
+                    $"'{nuevaMision.Codigo}' " +
+                    $"registrada correctamente " +
+                    $"en la base de datos."
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
+            catch (
+                MisionInvalidaException mex)
+            {
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[VALIDACIÓN] " +
+                    $"{mex.Message}"
+                );
+
+                Console.ResetColor();
+            }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] No se pudo modificar la misión: {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] No se pudo " +
+                    $"crear la misión: " +
+                    $"{ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void AsignarRecursoAMision()
+        private static void
+            ModificarMision()
         {
-            if (!sesion.TienePermiso(RolUsuario.Coordinador) && !sesion.TienePermiso(RolUsuario.Administrador))
+            if (!sesion.TienePermiso(
+                    RolUsuario.Coordinador) &&
+                !sesion.TienePermiso(
+                    RolUsuario.Administrador))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Su rol no tiene permisos para asignar recursos.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Su rol no tiene " +
+                    "permisos para modificar misiones."
+                );
+
                 Console.ResetColor();
+
                 Pausar();
                 return;
             }
 
             LimpiarConsola();
-            MostrarTitulo("=== ASIGNAR RECURSO A MISIÓN ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== MODIFICAR DATOS DE UNA MISIÓN ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                string codigoMision = LeerTextoObligatorio("Código de la misión (ej. MIS-001): ", 20);
-                var mision = misionRepo.ObtenerPorCodigo(codigoMision);
+                string codigo =
+                    LeerTextoObligatorio(
+                        "Código de la misión " +
+                        "a modificar: ",
+                        20
+                    );
+
+                var mision =
+                    misionRepo
+                        .ObtenerPorCodigo(
+                            codigo
+                        );
 
                 if (mision == null)
                 {
-                    Console.WriteLine("Misión no encontrada.");
-                    Pausar();
-                    return;
-                }
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
 
-                if (mision.Estado == EstadoMision.Finalizada || mision.Estado == EstadoMision.Cancelada)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"No se pueden asignar recursos a una misión en estado {mision.Estado}.");
+                    Console.WriteLine(
+                        "Misión no encontrada " +
+                        "en el sistema."
+                    );
+
                     Console.ResetColor();
+
                     Pausar();
                     return;
                 }
 
-                Console.WriteLine($"\nMisión seleccionada: {mision.Nombre} (Estado: {mision.Estado})");
+                if (mision.Estado ==
+                        EstadoMision.Finalizada ||
+                    mision.Estado ==
+                        EstadoMision.Cancelada)
+                {
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
 
-                Console.WriteLine("\nRecursos actualmente disponibles:");
-                var disponibles = recursoRepo.ObtenerDisponibles();
+                    Console.WriteLine(
+                        $"[DENEGADO] No se pueden " +
+                        $"modificar misiones en " +
+                        $"estado {mision.Estado}."
+                    );
+
+                    Console.ResetColor();
+
+                    Pausar();
+                    return;
+                }
+
+                Console.WriteLine(
+                    $"\nMisión actual: " +
+                    $"{mision.Nombre} " +
+                    $"[{mision.Codigo}]"
+                );
+
+                Console.WriteLine(
+                    $"Descripción: " +
+                    $"{mision.Descripcion}"
+                );
+
+                Console.WriteLine(
+                    $"Fechas: " +
+                    $"{mision.FechaInicio:yyyy-MM-dd} " +
+                    $"al " +
+                    $"{mision.FechaFinEstimada:yyyy-MM-dd}"
+                );
+
+                Console.WriteLine(
+                    $"Prioridad: " +
+                    $"{mision.Prioridad} | " +
+                    $"Estado: " +
+                    $"{mision.Estado}\n"
+                );
+
+                mision.Nombre =
+                    LeerTextoOpcional(
+                        "Nuevo nombre",
+                        mision.Nombre,
+                        100
+                    );
+
+                mision.Descripcion =
+                    LeerTextoOpcional(
+                        "Nueva descripción",
+                        mision.Descripcion,
+                        500
+                    );
+
+                if (LeerConfirmacion(
+                    "¿Desea modificar las fechas de la misión?"))
+                {
+                    DateTime nuevaInicio =
+                        LeerFecha(
+                            "Nueva fecha de inicio"
+                        );
+
+                    DateTime nuevaFin =
+                        LeerFecha(
+                            "Nueva fecha fin estimada",
+                            fechaMinima:
+                                nuevaInicio
+                        );
+
+                    mision.FechaInicio =
+                        nuevaInicio;
+
+                    mision.FechaFinEstimada =
+                        nuevaFin;
+                }
+
+                if (LeerConfirmacion(
+                    "¿Desea cambiar la prioridad de la misión?"))
+                {
+                    mision.Prioridad =
+                        LeerPrioridad();
+                }
+
+                misionRepo.Actualizar(
+                    mision
+                );
+
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Misión " +
+                    $"'{mision.Codigo}' " +
+                    $"actualizada exitosamente."
+                );
+
+                Console.ResetColor();
+            }
+            catch (
+                OperationCanceledException)
+            {
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] No se pudo " +
+                    $"modificar la misión: " +
+                    $"{ex.Message}"
+                );
+
+                Console.ResetColor();
+            }
+
+            Pausar();
+        }
+
+        private static void
+            AsignarRecursoAMision()
+        {
+            if (!sesion.TienePermiso(
+                    RolUsuario.Coordinador) &&
+                !sesion.TienePermiso(
+                    RolUsuario.Administrador))
+            {
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Su rol no tiene " +
+                    "permisos para asignar recursos."
+                );
+
+                Console.ResetColor();
+
+                Pausar();
+                return;
+            }
+
+            LimpiarConsola();
+
+            MostrarTitulo(
+                "=== ASIGNAR RECURSO A MISIÓN ===",
+                ConsoleColor.Yellow
+            );
+
+            try
+            {
+                string codigoMision =
+                    LeerTextoObligatorio(
+                        "Código de la misión " +
+                        "(ej. MIS-001): ",
+                        20
+                    );
+
+                var mision =
+                    misionRepo
+                        .ObtenerPorCodigo(
+                            codigoMision
+                        );
+
+                if (mision == null)
+                {
+                    Console.WriteLine(
+                        "Misión no encontrada."
+                    );
+
+                    Pausar();
+                    return;
+                }
+
+                if (mision.Estado ==
+                        EstadoMision.Finalizada ||
+                    mision.Estado ==
+                        EstadoMision.Cancelada)
+                {
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        $"No se pueden asignar " +
+                        $"recursos a una misión " +
+                        $"en estado {mision.Estado}."
+                    );
+
+                    Console.ResetColor();
+
+                    Pausar();
+                    return;
+                }
+
+                Console.WriteLine(
+                    $"\nMisión seleccionada: " +
+                    $"{mision.Nombre} " +
+                    $"(Estado: {mision.Estado})"
+                );
+
+                Console.WriteLine(
+                    "\nRecursos actualmente disponibles:"
+                );
+
+                var disponibles =
+                    recursoRepo
+                        .ObtenerDisponibles();
+
                 if (disponibles.Count == 0)
                 {
-                    Console.WriteLine("No hay recursos disponibles en este momento.");
+                    Console.WriteLine(
+                        "No hay recursos disponibles " +
+                        "en este momento."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                foreach (var d in disponibles)
+                foreach (
+                    var d in disponibles)
                 {
-                    Console.WriteLine($"  * [{d.Id}] {d}");
+                    Console.WriteLine(
+                        $"  * [{d.Id}] {d}"
+                    );
                 }
 
-                string codigoRecurso = LeerTextoObligatorio("\nIngrese el código del recurso a asignar (ej. DRN-002): ", 20);
-                var recurso = recursoRepo.ObtenerPorCodigo(codigoRecurso);
+                string codigoRecurso =
+                    LeerTextoObligatorio(
+                        "\nIngrese el código del " +
+                        "recurso a asignar " +
+                        "(ej. DRN-002): ",
+                        20
+                    );
+
+                var recurso =
+                    recursoRepo
+                        .ObtenerPorCodigo(
+                            codigoRecurso
+                        );
 
                 if (recurso == null)
                 {
-                    Console.WriteLine("Recurso no encontrado.");
+                    Console.WriteLine(
+                        "Recurso no encontrado."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                // Solicitar cantidad de operación polimórfica según el tipo de recurso
                 decimal cantidadOperacion = 1;
+
                 if (recurso is Dron dron)
                 {
-                    Console.WriteLine($"\n[TIPO: Dron] Costo por hora de vuelo: ${dron.CostoPorHora:N2}");
-                    cantidadOperacion = LeerDecimalPositivo("Horas de vuelo estimadas para esta misión: ", min: 0.1m);
+                    Console.WriteLine(
+                        $"\n[TIPO: Dron] " +
+                        $"Costo por hora de vuelo: " +
+                        $"${dron.CostoPorHora:N2}"
+                    );
+
+                    cantidadOperacion =
+                        LeerDecimalPositivo(
+                            "Horas de vuelo estimadas " +
+                            "para esta misión: ",
+                            min: 0.1m
+                        );
                 }
-                else if (recurso is RoverTerrestre rover)
+                else if (
+                    recurso is
+                    RoverTerrestre rover)
                 {
-                    Console.WriteLine($"\n[TIPO: Rover Terrestre] Costo por kilómetro: ${rover.CostoPorKilometro:N2}");
-                    cantidadOperacion = LeerDecimalPositivo("Kilómetros de recorrido estimados para esta misión: ", min: 0.1m);
+                    Console.WriteLine(
+                        $"\n[TIPO: Rover Terrestre] " +
+                        $"Costo por kilómetro: " +
+                        $"${rover.CostoPorKilometro:N2}"
+                    );
+
+                    cantidadOperacion =
+                        LeerDecimalPositivo(
+                            "Kilómetros de recorrido " +
+                            "estimados para esta misión: ",
+                            min: 0.1m
+                        );
                 }
-                else if (recurso is EstacionSensores estacion)
+                else if (
+                    recurso is
+                    EstacionSensores estacion)
                 {
-                    Console.WriteLine($"\n[TIPO: Estación de Sensores] Costo diario de operación: ${estacion.CostoDiario:N2}");
-                    cantidadOperacion = LeerDecimalPositivo("Días de operación estimados para esta misión: ", min: 0.1m);
+                    Console.WriteLine(
+                        $"\n[TIPO: Estación de Sensores] " +
+                        $"Costo diario de operación: " +
+                        $"${estacion.CostoDiario:N2}"
+                    );
+
+                    cantidadOperacion =
+                        LeerDecimalPositivo(
+                            "Días de operación estimados " +
+                            "para esta misión: ",
+                            min: 0.1m
+                        );
                 }
 
-                // Asignar en entidad de dominio con cálculo de costo
-                mision.AsignarRecurso(recurso, cantidadOperacion);
+                mision.AsignarRecurso(
+                    recurso,
+                    cantidadOperacion
+                );
 
-                // Persistir en base de datos con la cantidad de operación ingresada
-                asignacionRepo.RegistrarAsignacion(mision.Id, recurso.Id, cantidadOperacion);
+                asignacionRepo
+                    .RegistrarAsignacion(
+                        mision.Id,
+                        recurso.Id,
+                        cantidadOperacion
+                    );
 
-                decimal costoCalculado = recurso.CalcularCostoOperacion(cantidadOperacion);
+                decimal costoCalculado =
+                    recurso
+                        .CalcularCostoOperacion(
+                            cantidadOperacion
+                        );
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Recurso '{recurso.Codigo}' asignado a la misión '{mision.Codigo}'.");
-                Console.WriteLine($"Costo de operación estimado para este recurso: ${costoCalculado:N2}");
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Recurso " +
+                    $"'{recurso.Codigo}' " +
+                    $"asignado a la misión " +
+                    $"'{mision.Codigo}'."
+                );
+
+                Console.WriteLine(
+                    $"Costo de operación estimado " +
+                    $"para este recurso: " +
+                    $"${costoCalculado:N2}"
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
-            catch (RecursoNoDisponibleException rex)
+            catch (
+                RecursoNoDisponibleException rex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[RECURSO NO DISPONIBLE] {rex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[RECURSO NO DISPONIBLE] " +
+                    $"{rex.Message}"
+                );
+
                 Console.ResetColor();
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void RetirarRecursoDeMision()
+        private static void
+            RetirarRecursoDeMision()
         {
-            if (!sesion.TienePermiso(RolUsuario.Coordinador) && !sesion.TienePermiso(RolUsuario.Administrador))
+            if (!sesion.TienePermiso(
+                    RolUsuario.Coordinador) &&
+                !sesion.TienePermiso(
+                    RolUsuario.Administrador))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Su rol no tiene permisos para retirar recursos.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Su rol no tiene " +
+                    "permisos para retirar recursos."
+                );
+
                 Console.ResetColor();
+
                 Pausar();
                 return;
             }
 
             LimpiarConsola();
-            MostrarTitulo("=== RETIRAR RECURSO DE MISIÓN ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== RETIRAR RECURSO DE MISIÓN ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                string codigoMision = LeerTextoObligatorio("Código de la misión: ", 20);
-                var mision = misionRepo.ObtenerPorCodigo(codigoMision);
+                string codigoMision =
+                    LeerTextoObligatorio(
+                        "Código de la misión: ",
+                        20
+                    );
+
+                var mision =
+                    misionRepo
+                        .ObtenerPorCodigo(
+                            codigoMision
+                        );
 
                 if (mision == null)
                 {
-                    Console.WriteLine("Misión no encontrada.");
+                    Console.WriteLine(
+                        "Misión no encontrada."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                if (mision.Estado == EstadoMision.Finalizada || mision.Estado == EstadoMision.Cancelada)
+                if (mision.Estado ==
+                        EstadoMision.Finalizada ||
+                    mision.Estado ==
+                        EstadoMision.Cancelada)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[DENEGADO] No se pueden retirar recursos de una misión en estado {mision.Estado} (sus recursos ya fueron liberados).");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        $"[DENEGADO] No se pueden " +
+                        $"retirar recursos de una " +
+                        $"misión en estado " +
+                        $"{mision.Estado} " +
+                        $"(sus recursos ya fueron liberados)."
+                    );
+
                     Console.ResetColor();
+
                     Pausar();
                     return;
                 }
 
-                var asignacionesActivas = mision.Asignaciones.Where(a => a.EstaActiva() && a.Recurso != null).ToList();
-                if (asignacionesActivas.Count == 0)
+                var asignacionesActivas =
+                    mision.Asignaciones
+                        .Where(
+                            a =>
+                                a.EstaActiva() &&
+                                a.Recurso != null
+                        )
+                        .ToList();
+
+                if (asignacionesActivas
+                    .Count == 0)
                 {
-                    Console.WriteLine("Esta misión no tiene recursos asignados activamente en este momento.");
+                    Console.WriteLine(
+                        "Esta misión no tiene " +
+                        "recursos asignados " +
+                        "activamente en este momento."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                Console.WriteLine("\nRecursos actualmente asignados a esta misión:");
-                foreach (var a in asignacionesActivas)
+                Console.WriteLine(
+                    "\nRecursos actualmente " +
+                    "asignados a esta misión:"
+                );
+
+                foreach (
+                    var a in
+                        asignacionesActivas)
                 {
-                    Console.WriteLine($"  * [{a.Recurso.Id}] {a.Recurso}");
+                    Console.WriteLine(
+                        $"  * [{a.Recurso.Id}] " +
+                        $"{a.Recurso}"
+                    );
                 }
 
-                string codigoRecurso = LeerTextoObligatorio("\nIngrese el código del recurso a retirar: ", 20);
-                var asigSeleccionada = asignacionesActivas.FirstOrDefault(a => a.Recurso.Codigo.Equals(codigoRecurso, StringComparison.OrdinalIgnoreCase));
+                string codigoRecurso =
+                    LeerTextoObligatorio(
+                        "\nIngrese el código del " +
+                        "recurso a retirar: ",
+                        20
+                    );
+
+                var asigSeleccionada =
+                    asignacionesActivas
+                        .FirstOrDefault(
+                            a =>
+                                a.Recurso.Codigo
+                                    .Equals(
+                                        codigoRecurso,
+                                        StringComparison
+                                            .OrdinalIgnoreCase
+                                    )
+                        );
 
                 if (asigSeleccionada == null)
                 {
-                    Console.WriteLine("El recurso no pertenece o no se encuentra activo en la misión seleccionada.");
+                    Console.WriteLine(
+                        "El recurso no pertenece " +
+                        "o no se encuentra activo " +
+                        "en la misión seleccionada."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                var recurso = asigSeleccionada.Recurso;
-                mision.RetirarRecurso(recurso);
-                asignacionRepo.LiberarRecursoDeMision(mision.Id, recurso.Id);
+                var recurso =
+                    asigSeleccionada.Recurso;
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Recurso '{recurso.Codigo}' retirado de la misión y devuelto al estado Disponible.");
+                mision.RetirarRecurso(
+                    recurso
+                );
+
+                asignacionRepo
+                    .LiberarRecursoDeMision(
+                        mision.Id,
+                        recurso.Id
+                    );
+
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Recurso " +
+                    $"'{recurso.Codigo}' " +
+                    $"retirado de la misión y " +
+                    $"devuelto al estado Disponible."
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void IniciarMision()
+        private static void
+            IniciarMision()
         {
-            if (!sesion.TienePermiso(RolUsuario.Coordinador) && !sesion.TienePermiso(RolUsuario.Administrador))
+            if (!sesion.TienePermiso(
+                    RolUsuario.Coordinador) &&
+                !sesion.TienePermiso(
+                    RolUsuario.Administrador))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Su rol no tiene permisos para iniciar misiones.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Su rol no tiene " +
+                    "permisos para iniciar misiones."
+                );
+
                 Console.ResetColor();
+
                 Pausar();
                 return;
             }
 
             LimpiarConsola();
-            MostrarTitulo("=== INICIAR MISIÓN - PROTOCOLO DE SEGURIDAD ORBITA ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== INICIAR MISIÓN - PROTOCOLO DE SEGURIDAD ORBITA ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                string codigo = LeerTextoObligatorio("Código de la misión a iniciar (ej. MIS-002): ", 20);
-                var mision = misionRepo.ObtenerPorCodigo(codigo);
+                string codigo =
+                    LeerTextoObligatorio(
+                        "Código de la misión a " +
+                        "iniciar (ej. MIS-002): ",
+                        20
+                    );
+
+                var mision =
+                    misionRepo
+                        .ObtenerPorCodigo(
+                            codigo
+                        );
 
                 if (mision == null)
                 {
-                    Console.WriteLine("Misión no encontrada.");
+                    Console.WriteLine(
+                        "Misión no encontrada."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                Console.WriteLine($"\nVerificando Protocolo de Seguridad ORBITA para la misión '{mision.Nombre}'...");
+                Console.WriteLine(
+                    $"\nVerificando Protocolo " +
+                    $"de Seguridad ORBITA para " +
+                    $"la misión '{mision.Nombre}'..."
+                );
 
-                // Valida datos obligatorios, fechas, responsable activo, al menos un recurso,
-                // ningún recurso en mantenimiento y ningún recurso en otra misión activa
-                misionRepo.CambiarEstado(mision.Id, EstadoMision.EnEjecucion);
+                misionRepo.CambiarEstado(
+                    mision.Id,
+                    EstadoMision.EnEjecucion
+                );
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Protocolo de Seguridad verificado al 100%. La misión '{mision.Codigo}' ha iniciado su ejecución.");
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Protocolo de " +
+                    $"Seguridad verificado al " +
+                    $"100%. La misión " +
+                    $"'{mision.Codigo}' ha " +
+                    $"iniciado su ejecución."
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
-            catch (MisionInvalidaException mex)
+            catch (
+                MisionInvalidaException mex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[VIOLACIÓN DE PROTOCOLO DE SEGURIDAD] {mex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[VIOLACIÓN DE PROTOCOLO " +
+                    $"DE SEGURIDAD] {mex.Message}"
+                );
+
                 Console.ResetColor();
             }
-            catch (RecursoNoDisponibleException rex)
+            catch (
+                RecursoNoDisponibleException rex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[FALLA EN RECURSOS ASIGNADOS] {rex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[FALLA EN RECURSOS " +
+                    $"ASIGNADOS] {rex.Message}"
+                );
+
                 Console.ResetColor();
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void FinalizarMision()
+        private static void
+            FinalizarMision()
         {
-            if (!sesion.TienePermiso(RolUsuario.Coordinador) && !sesion.TienePermiso(RolUsuario.Administrador))
+            if (!sesion.TienePermiso(
+                    RolUsuario.Coordinador) &&
+                !sesion.TienePermiso(
+                    RolUsuario.Administrador))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Su rol no tiene permisos para finalizar misiones.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Su rol no tiene " +
+                    "permisos para finalizar misiones."
+                );
+
                 Console.ResetColor();
+
                 Pausar();
                 return;
             }
 
             LimpiarConsola();
-            MostrarTitulo("=== FINALIZAR MISIÓN ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== FINALIZAR MISIÓN ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                string codigo = LeerTextoObligatorio("Código de la misión a finalizar: ", 20);
-                var mision = misionRepo.ObtenerPorCodigo(codigo);
+                string codigo =
+                    LeerTextoObligatorio(
+                        "Código de la misión " +
+                        "a finalizar: ",
+                        20
+                    );
+
+                var mision =
+                    misionRepo
+                        .ObtenerPorCodigo(
+                            codigo
+                        );
 
                 if (mision == null)
                 {
-                    Console.WriteLine("Misión no encontrada.");
+                    Console.WriteLine(
+                        "Misión no encontrada."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                // Regla estricta: sólo misiones en EnEjecucion pueden finalizarse
-                if (mision.Estado != EstadoMision.EnEjecucion)
+                if (mision.Estado !=
+                    EstadoMision.EnEjecucion)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[REGLA DE NEGOCIO] Únicamente las misiones en estado 'EnEjecucion' pueden ser finalizadas. Estado actual de '{mision.Codigo}': {mision.Estado}.");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        $"[REGLA DE NEGOCIO] " +
+                        $"Únicamente las misiones " +
+                        $"en estado 'EnEjecucion' " +
+                        $"pueden ser finalizadas. " +
+                        $"Estado actual de " +
+                        $"'{mision.Codigo}': " +
+                        $"{mision.Estado}."
+                    );
+
                     Console.ResetColor();
+
                     Pausar();
                     return;
                 }
 
-                misionRepo.CambiarEstado(mision.Id, EstadoMision.Finalizada);
+                misionRepo.CambiarEstado(
+                    mision.Id,
+                    EstadoMision.Finalizada
+                );
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Misión '{mision.Codigo}' finalizada con éxito. Todos sus recursos asignados han sido liberados y están Disponibles.");
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Misión " +
+                    $"'{mision.Codigo}' finalizada " +
+                    $"con éxito. Todos sus recursos " +
+                    $"asignados han sido liberados " +
+                    $"y están Disponibles."
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void CancelarMision()
+        private static void
+            CancelarMision()
         {
-            if (!sesion.TienePermiso(RolUsuario.Administrador))
+            if (!sesion.TienePermiso(
+                RolUsuario.Administrador))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Solo los Administradores tienen permisos para cancelar misiones.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Solo los " +
+                    "Administradores tienen " +
+                    "permisos para cancelar misiones."
+                );
+
                 Console.ResetColor();
+
                 Pausar();
                 return;
             }
 
             LimpiarConsola();
-            MostrarTitulo("=== CANCELAR MISIÓN ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== CANCELAR MISIÓN ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                string codigo = LeerTextoObligatorio("Código de la misión a cancelar: ", 20);
-                var mision = misionRepo.ObtenerPorCodigo(codigo);
+                string codigo =
+                    LeerTextoObligatorio(
+                        "Código de la misión " +
+                        "a cancelar: ",
+                        20
+                    );
+
+                var mision =
+                    misionRepo
+                        .ObtenerPorCodigo(
+                            codigo
+                        );
 
                 if (mision == null)
                 {
-                    Console.WriteLine("Misión no encontrada.");
+                    Console.WriteLine(
+                        "Misión no encontrada."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                if (mision.Estado == EstadoMision.Finalizada)
+                if (mision.Estado ==
+                    EstadoMision.Finalizada)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("No se puede cancelar una misión que ya ha finalizado.");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        "No se puede cancelar una " +
+                        "misión que ya ha finalizado."
+                    );
+
                     Console.ResetColor();
+
                     Pausar();
                     return;
                 }
 
-                if (!LeerConfirmacion($"¿Está seguro de que desea cancelar la misión '{mision.Codigo}'?"))
+                if (!LeerConfirmacion(
+                    $"¿Está seguro de que desea " +
+                    $"cancelar la misión " +
+                    $"'{mision.Codigo}'?"))
                 {
-                    Console.WriteLine("Operación cancelada por el usuario.");
+                    Console.WriteLine(
+                        "Operación cancelada " +
+                        "por el usuario."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                misionRepo.CambiarEstado(mision.Id, EstadoMision.Cancelada);
+                misionRepo.CambiarEstado(
+                    mision.Id,
+                    EstadoMision.Cancelada
+                );
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Misión '{mision.Codigo}' cancelada y sus recursos liberados.");
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Misión " +
+                    $"'{mision.Codigo}' cancelada " +
+                    $"y sus recursos liberados."
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void CalcularCostoMision()
+        private static void
+            CalcularCostoMision()
         {
             LimpiarConsola();
-            MostrarTitulo("=== CÁLCULO DE COSTO ESTIMADO DE MISIÓN ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== CÁLCULO DE COSTO ESTIMADO DE MISIÓN ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                string codigo = LeerTextoObligatorio("Código de la misión: ", 20);
-                var mision = misionRepo.ObtenerPorCodigo(codigo);
+                string codigo =
+                    LeerTextoObligatorio(
+                        "Código de la misión: ",
+                        20
+                    );
+
+                var mision =
+                    misionRepo
+                        .ObtenerPorCodigo(
+                            codigo
+                        );
 
                 if (mision == null)
                 {
-                    Console.WriteLine("Misión no encontrada.");
+                    Console.WriteLine(
+                        "Misión no encontrada."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                Console.WriteLine($"\nMisión: {mision.Nombre} [{mision.Codigo}]");
-                Console.WriteLine($"Fechas: {mision.FechaInicio:yyyy-MM-dd} al {mision.FechaFinEstimada:yyyy-MM-dd}");
-                decimal dias = (decimal)Math.Max(1, Math.Ceiling((mision.FechaFinEstimada - mision.FechaInicio).TotalDays));
-                Console.WriteLine($"Duración estimada base: {dias} día(s)");
+                Console.WriteLine(
+                    $"\nMisión: " +
+                    $"{mision.Nombre} " +
+                    $"[{mision.Codigo}]"
+                );
 
-                string encabezadoRecursos = (mision.Estado == EstadoMision.Finalizada || mision.Estado == EstadoMision.Cancelada)
-                    ? $"\nRecursos y operaciones históricas registradas ({mision.Recursos.Count}):"
-                    : $"\nRecursos asignados ({mision.Recursos.Count}):";
-                Console.WriteLine(encabezadoRecursos);
+                Console.WriteLine(
+                    $"Fechas: " +
+                    $"{mision.FechaInicio:yyyy-MM-dd} " +
+                    $"al " +
+                    $"{mision.FechaFinEstimada:yyyy-MM-dd}"
+                );
+
+                decimal dias =
+                    (decimal)Math.Max(
+                        1,
+                        Math.Ceiling(
+                            (
+                                mision
+                                    .FechaFinEstimada -
+                                mision
+                                    .FechaInicio
+                            ).TotalDays
+                        )
+                    );
+
+                Console.WriteLine(
+                    $"Duración estimada base: " +
+                    $"{dias} día(s)"
+                );
+
+                string encabezadoRecursos =
+                    mision.Estado ==
+                        EstadoMision.Finalizada ||
+                    mision.Estado ==
+                        EstadoMision.Cancelada
+                        ? $"\nRecursos y operaciones " +
+                          $"históricas registradas " +
+                          $"({mision.Recursos.Count}):"
+                        : $"\nRecursos asignados " +
+                          $"({mision.Recursos.Count}):";
+
+                Console.WriteLine(
+                    encabezadoRecursos
+                );
+
                 if (mision.Recursos.Count == 0)
                 {
-                    Console.WriteLine("   (No tiene recursos registrados)");
+                    Console.WriteLine(
+                        "   (No tiene recursos registrados)"
+                    );
                 }
                 else
                 {
-                    foreach (var r in mision.Recursos)
+                    foreach (
+                        var r in
+                            mision.Recursos)
                     {
-                        var asig = mision.Asignaciones.FirstOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id && a.EstaActiva())
-                                ?? mision.Asignaciones.LastOrDefault(a => a.Recurso != null && a.Recurso.Id == r.Id);
-                        decimal cantidadUso = asig != null ? asig.CantidadOperacion : dias;
-                        decimal costoIndividual = asig != null ? asig.CalcularCosto() : r.CalcularCostoOperacion(cantidadUso);
-                        string unidad = r is Dron ? "horas de vuelo" : (r is RoverTerrestre ? "km" : "días");
-                        string estadoAsig = asig != null ? (asig.EstaActiva() ? " [ACTIVA]" : " [HISTÓRICA/FINALIZADA]") : "";
-                        Console.WriteLine($"  * {r.Codigo} ({r.Modelo}) [{r.GetType().Name}] -> Costo ({cantidadUso:N2} {unidad}){estadoAsig}: ${costoIndividual:N2}");
+                        var asig =
+                            mision.Asignaciones
+                                .FirstOrDefault(
+                                    a =>
+                                        a.Recurso !=
+                                            null &&
+                                        a.Recurso.Id ==
+                                            r.Id &&
+                                        a.EstaActiva()
+                                )
+                            ??
+                            mision.Asignaciones
+                                .LastOrDefault(
+                                    a =>
+                                        a.Recurso !=
+                                            null &&
+                                        a.Recurso.Id ==
+                                            r.Id
+                                );
+
+                        decimal cantidadUso =
+                            asig != null
+                                ? asig
+                                    .CantidadOperacion
+                                : 0;
+
+                        decimal costoIndividual =
+                            asig != null
+                                ? asig
+                                    .CalcularCosto()
+                                : 0;
+
+                        string unidad =
+                            r is Dron
+                                ? "horas de vuelo"
+                                : r is
+                                    RoverTerrestre
+                                    ? "km"
+                                    : "días";
+
+                        string estadoAsig =
+                            asig != null
+                                ? asig.EstaActiva()
+                                    ? " [ACTIVA]"
+                                    : " [HISTÓRICA/FINALIZADA]"
+                                : "";
+
+                        Console.WriteLine(
+                            $"  * {r.Codigo} " +
+                            $"({r.Modelo}) " +
+                            $"[{r.GetType().Name}] " +
+                            $"-> Costo " +
+                            $"({cantidadUso:N2} " +
+                            $"{unidad})" +
+                            $"{estadoAsig}: " +
+                            $"${costoIndividual:N2}"
+                        );
                     }
                 }
 
-                decimal total = mision.CalcularCostoEstimado();
+                decimal total =
+                    mision
+                        .CalcularCostoEstimado();
 
-                string etiquetaCosto = (mision.Estado == EstadoMision.Finalizada)
-                    ? " COSTO TOTAL HISTÓRICO DE OPERACIÓN: $"
-                    : " COSTO TOTAL ESTIMADO DE LA MISIÓN: $";
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n==================================================");
-                Console.WriteLine($"{etiquetaCosto}{total:N2}");
-                Console.WriteLine($"==================================================");
+                string etiquetaCosto =
+                    mision.Estado ==
+                    EstadoMision.Finalizada
+                        ? " COSTO TOTAL HISTÓRICO DE OPERACIÓN: $"
+                        : " COSTO TOTAL ESTIMADO DE LA MISIÓN: $";
+
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    "\n=================================================="
+                );
+
+                Console.WriteLine(
+                    $"{etiquetaCosto}{total:N2}"
+                );
+
+                Console.WriteLine(
+                    "=================================================="
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
@@ -1206,287 +2591,704 @@ namespace ORBITAL
 
         #region Operaciones de Recursos
 
-        private static void ListarRecursos(bool soloDisponibles)
+        private static void
+            ListarRecursos(
+                bool soloDisponibles)
         {
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(soloDisponibles ? "=== RECURSOS DISPONIBLES ===" : "=== TODOS LOS RECURSOS DE EXPLORACIÓN ===");
+
+            Console.ForegroundColor =
+                ConsoleColor.Yellow;
+
+            Console.WriteLine(
+                soloDisponibles
+                    ? "=== RECURSOS DISPONIBLES ==="
+                    : "=== TODOS LOS RECURSOS DE EXPLORACIÓN ==="
+            );
+
             Console.ResetColor();
 
             try
             {
-                var recursos = soloDisponibles ? recursoRepo.ObtenerDisponibles() : recursoRepo.ObtenerTodos();
+                var recursos =
+                    soloDisponibles
+                        ? recursoRepo
+                            .ObtenerDisponibles()
+                        : recursoRepo
+                            .ObtenerTodos();
 
                 if (recursos.Count == 0)
                 {
-                    Console.WriteLine("No se encontraron recursos.");
+                    Console.WriteLine(
+                        "No se encontraron recursos."
+                    );
                 }
                 else
                 {
-                    foreach (var r in recursos)
+                    foreach (
+                        var r in recursos)
                     {
-                        Console.WriteLine($"  * [ID: {r.Id}] {r}");
+                        Console.WriteLine(
+                            $"  * [ID: {r.Id}] {r}"
+                        );
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Error al consultar recursos: {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"Error al consultar " +
+                    $"recursos: {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void RegistrarRecurso()
+        private static void
+            RegistrarRecurso()
         {
-            if (!sesion.TienePermiso(RolUsuario.Administrador))
+            if (!sesion.TienePermiso(
+                RolUsuario.Administrador))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Solo los Administradores pueden registrar nuevos recursos.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Solo los " +
+                    "Administradores pueden " +
+                    "registrar nuevos recursos."
+                );
+
                 Console.ResetColor();
+
                 Pausar();
                 return;
             }
 
             LimpiarConsola();
-            MostrarTitulo("=== REGISTRAR NUEVO RECURSO DE EXPLORACIÓN ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== REGISTRAR NUEVO RECURSO DE EXPLORACIÓN ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
                 string tipo = "";
+
                 while (true)
                 {
-                    Console.WriteLine("Seleccione el tipo de recurso:");
-                    Console.WriteLine("  1. Dron de Exploración");
-                    Console.WriteLine("  2. Rover Terrestre");
-                    Console.WriteLine("  3. Estación de Sensores");
-                    Console.WriteLine("  0. Cancelar / Volver (o presione ESC)");
-                    tipo = LeerEntrada("Tipo (1-3 o 0/ESC): ");
+                    Console.WriteLine(
+                        "Seleccione el tipo de recurso:"
+                    );
 
-                    if (tipo == null || tipo == "0")
+                    Console.WriteLine(
+                        "  1. Dron de Exploración"
+                    );
+
+                    Console.WriteLine(
+                        "  2. Rover Terrestre"
+                    );
+
+                    Console.WriteLine(
+                        "  3. Estación de Sensores"
+                    );
+
+                    Console.WriteLine(
+                        "  0. Cancelar / Volver " +
+                        "(o presione ESC)"
+                    );
+
+                    tipo =
+                        LeerEntrada(
+                            "Tipo (1-3 o 0/ESC): "
+                        );
+
+                    if (tipo == null ||
+                        tipo == "0")
+                    {
                         return;
+                    }
 
-                    if (tipo == "1" || tipo == "2" || tipo == "3")
+                    if (tipo == "1" ||
+                        tipo == "2" ||
+                        tipo == "3")
+                    {
                         break;
+                    }
 
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("[ERROR] Opción inválida. Debe seleccionar 1, 2 o 3.\n");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        "[ERROR] Opción inválida. " +
+                        "Debe seleccionar 1, 2 o 3.\n"
+                    );
+
                     Console.ResetColor();
                 }
 
-                string codigo = LeerTextoObligatorio("Código único (ej. DRN-004, ROV-004, EST-004, máx 20 caracteres): ", 20);
-                string modelo = LeerTextoObligatorio("Modelo del recurso (máx 100 caracteres): ", 100);
+                string codigo =
+                    LeerTextoObligatorio(
+                        "Código único " +
+                        "(ej. DRN-004, ROV-004, " +
+                        "EST-004, máx 20 caracteres): ",
+                        20
+                    );
 
-                RecursoExploracion nuevo = null;
+                string modelo =
+                    LeerTextoObligatorio(
+                        "Modelo del recurso " +
+                        "(máx 100 caracteres): ",
+                        100
+                    );
+
+                RecursoExploracion nuevo =
+                    null;
 
                 switch (tipo)
                 {
                     case "1":
-                        decimal autonomiaVuelo = LeerDecimalPositivo("Autonomía de vuelo en horas: ", min: 0.1m);
-                        decimal alcance = LeerDecimalPositivo("Alcance en kilómetros: ", min: 0.1m);
-                        decimal costoHora = LeerDecimalPositivo("Costo por hora ($): ", min: 0);
+                        decimal autonomiaVuelo =
+                            LeerDecimalPositivo(
+                                "Autonomía de vuelo " +
+                                "en horas: ",
+                                min: 0.1m
+                            );
 
-                        nuevo = new Dron(codigo, modelo, autonomiaVuelo, alcance, costoHora);
+                        decimal alcance =
+                            LeerDecimalPositivo(
+                                "Alcance en kilómetros: ",
+                                min: 0.1m
+                            );
+
+                        decimal costoHora =
+                            LeerDecimalPositivo(
+                                "Costo por hora ($): ",
+                                min: 0
+                            );
+
+                        nuevo =
+                            new Dron(
+                                codigo,
+                                modelo,
+                                autonomiaVuelo,
+                                alcance,
+                                costoHora
+                            );
+
                         break;
 
                     case "2":
-                        decimal autonomiaRover = LeerDecimalPositivo("Autonomía en kilómetros: ", min: 0.1m);
-                        decimal carga = LeerDecimalPositivo("Capacidad de carga en kg: ", min: 0);
-                        decimal costoKm = LeerDecimalPositivo("Costo por kilómetro ($): ", min: 0);
+                        decimal autonomiaRover =
+                            LeerDecimalPositivo(
+                                "Autonomía en kilómetros: ",
+                                min: 0.1m
+                            );
 
-                        nuevo = new RoverTerrestre(codigo, modelo, autonomiaRover, carga, costoKm);
+                        decimal carga =
+                            LeerDecimalPositivo(
+                                "Capacidad de carga " +
+                                "en kg: ",
+                                min: 0
+                            );
+
+                        decimal costoKm =
+                            LeerDecimalPositivo(
+                                "Costo por kilómetro ($): ",
+                                min: 0
+                            );
+
+                        nuevo =
+                            new RoverTerrestre(
+                                codigo,
+                                modelo,
+                                autonomiaRover,
+                                carga,
+                                costoKm
+                            );
+
                         break;
 
                     case "3":
-                        int sensores = LeerEnteroPositivo("Cantidad de sensores (entero positivo): ", min: 1);
-                        decimal consumo = LeerDecimalPositivo("Consumo energético (kW): ", min: 0);
-                        decimal costoDiario = LeerDecimalPositivo("Costo diario ($): ", min: 0);
+                        int sensores =
+                            LeerEnteroPositivo(
+                                "Cantidad de sensores " +
+                                "(entero positivo): ",
+                                min: 1
+                            );
 
-                        nuevo = new EstacionSensores(codigo, modelo, sensores, consumo, costoDiario);
+                        decimal consumo =
+                            LeerDecimalPositivo(
+                                "Consumo energético " +
+                                "(kW): ",
+                                min: 0
+                            );
+
+                        decimal costoDiario =
+                            LeerDecimalPositivo(
+                                "Costo diario ($): ",
+                                min: 0
+                            );
+
+                        nuevo =
+                            new EstacionSensores(
+                                codigo,
+                                modelo,
+                                sensores,
+                                consumo,
+                                costoDiario
+                            );
+
                         break;
                 }
 
-                recursoRepo.Registrar(nuevo);
+                recursoRepo.Registrar(
+                    nuevo
+                );
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Recurso '{nuevo.Codigo}' ({nuevo.Modelo}) registrado exitosamente en la base de datos.");
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Recurso " +
+                    $"'{nuevo.Codigo}' " +
+                    $"({nuevo.Modelo}) " +
+                    $"registrado exitosamente " +
+                    $"en la base de datos."
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void ModificarRecurso()
+        private static void
+            ModificarRecurso()
         {
-            if (!sesion.TienePermiso(RolUsuario.Administrador))
+            if (!sesion.TienePermiso(
+                RolUsuario.Administrador))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Solo los Administradores pueden modificar datos de recursos.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Solo los " +
+                    "Administradores pueden " +
+                    "modificar datos de recursos."
+                );
+
                 Console.ResetColor();
+
                 Pausar();
                 return;
             }
 
             LimpiarConsola();
-            MostrarTitulo("=== MODIFICAR DATOS DE UN RECURSO DE EXPLORACIÓN ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== MODIFICAR DATOS DE UN RECURSO DE EXPLORACIÓN ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                string codigo = LeerTextoObligatorio("Código del recurso a modificar: ", 20);
-                var recurso = recursoRepo.ObtenerPorCodigo(codigo);
+                string codigo =
+                    LeerTextoObligatorio(
+                        "Código del recurso " +
+                        "a modificar: ",
+                        20
+                    );
+
+                var recurso =
+                    recursoRepo
+                        .ObtenerPorCodigo(
+                            codigo
+                        );
 
                 if (recurso == null)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Recurso no encontrado en el sistema.");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        "Recurso no encontrado " +
+                        "en el sistema."
+                    );
+
                     Console.ResetColor();
+
                     Pausar();
                     return;
                 }
 
-                Console.WriteLine($"\nRecurso actual: {recurso}");
+                Console.WriteLine(
+                    $"\nRecurso actual: " +
+                    $"{recurso}"
+                );
 
-                recurso.Modelo = LeerTextoOpcional("Nuevo modelo", recurso.Modelo, 100);
+                recurso.Modelo =
+                    LeerTextoOpcional(
+                        "Nuevo modelo",
+                        recurso.Modelo,
+                        100
+                    );
 
                 if (recurso is Dron dron)
                 {
-                    Console.WriteLine($"\nParámetros del Dron:");
-                    dron.AutonomiaVuelo = LeerDecimalPositivo($"Autonomía de vuelo ({dron.AutonomiaVuelo} hrs) -> Nueva: ", min: 0.1m);
-                    dron.Alcance = LeerDecimalPositivo($"Alcance ({dron.Alcance} km) -> Nuevo: ", min: 0.1m);
-                    dron.CostoPorHora = LeerDecimalPositivo($"Costo por hora (${dron.CostoPorHora:N2}) -> Nuevo: ", min: 0);
+                    Console.WriteLine(
+                        "\nParámetros del Dron:"
+                    );
+
+                    dron.AutonomiaVuelo =
+                        LeerDecimalPositivo(
+                            $"Autonomía de vuelo " +
+                            $"({dron.AutonomiaVuelo} hrs) " +
+                            $"-> Nueva: ",
+                            min: 0.1m
+                        );
+
+                    dron.Alcance =
+                        LeerDecimalPositivo(
+                            $"Alcance " +
+                            $"({dron.Alcance} km) " +
+                            $"-> Nuevo: ",
+                            min: 0.1m
+                        );
+
+                    dron.CostoPorHora =
+                        LeerDecimalPositivo(
+                            $"Costo por hora " +
+                            $"(${dron.CostoPorHora:N2}) " +
+                            $"-> Nuevo: ",
+                            min: 0
+                        );
                 }
-                else if (recurso is RoverTerrestre rover)
+                else if (
+                    recurso is
+                    RoverTerrestre rover)
                 {
-                    Console.WriteLine($"\nParámetros del Rover Terrestre:");
-                    rover.Autonomia = LeerDecimalPositivo($"Autonomía ({rover.Autonomia} km) -> Nueva: ", min: 0.1m);
-                    rover.CapacidadCarga = LeerDecimalPositivo($"Capacidad de carga ({rover.CapacidadCarga} kg) -> Nueva: ", min: 0);
-                    rover.CostoPorKilometro = LeerDecimalPositivo($"Costo por km (${rover.CostoPorKilometro:N2}) -> Nuevo: ", min: 0);
+                    Console.WriteLine(
+                        "\nParámetros del " +
+                        "Rover Terrestre:"
+                    );
+
+                    rover.Autonomia =
+                        LeerDecimalPositivo(
+                            $"Autonomía " +
+                            $"({rover.Autonomia} km) " +
+                            $"-> Nueva: ",
+                            min: 0.1m
+                        );
+
+                    rover.CapacidadCarga =
+                        LeerDecimalPositivo(
+                            $"Capacidad de carga " +
+                            $"({rover.CapacidadCarga} kg) " +
+                            $"-> Nueva: ",
+                            min: 0
+                        );
+
+                    rover.CostoPorKilometro =
+                        LeerDecimalPositivo(
+                            $"Costo por km " +
+                            $"(${rover.CostoPorKilometro:N2}) " +
+                            $"-> Nuevo: ",
+                            min: 0
+                        );
                 }
-                else if (recurso is EstacionSensores estacion)
+                else if (
+                    recurso is
+                    EstacionSensores estacion)
                 {
-                    Console.WriteLine($"\nParámetros de la Estación de Sensores:");
-                    estacion.CantidadSensores = LeerEnteroPositivo($"Cantidad de sensores ({estacion.CantidadSensores}) -> Nueva: ", min: 1);
-                    estacion.ConsumoEnergetico = LeerDecimalPositivo($"Consumo energético ({estacion.ConsumoEnergetico} kW) -> Nuevo: ", min: 0);
-                    estacion.CostoDiario = LeerDecimalPositivo($"Costo diario (${estacion.CostoDiario:N2}) -> Nuevo: ", min: 0);
+                    Console.WriteLine(
+                        "\nParámetros de la " +
+                        "Estación de Sensores:"
+                    );
+
+                    estacion.CantidadSensores =
+                        LeerEnteroPositivo(
+                            $"Cantidad de sensores " +
+                            $"({estacion.CantidadSensores}) " +
+                            $"-> Nueva: ",
+                            min: 1
+                        );
+
+                    estacion.ConsumoEnergetico =
+                        LeerDecimalPositivo(
+                            $"Consumo energético " +
+                            $"({estacion.ConsumoEnergetico} kW) " +
+                            $"-> Nuevo: ",
+                            min: 0
+                        );
+
+                    estacion.CostoDiario =
+                        LeerDecimalPositivo(
+                            $"Costo diario " +
+                            $"(${estacion.CostoDiario:N2}) " +
+                            $"-> Nuevo: ",
+                            min: 0
+                        );
                 }
 
-                recursoRepo.Modificar(recurso);
+                recursoRepo.Modificar(
+                    recurso
+                );
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Recurso '{recurso.Codigo}' modificado exitosamente.");
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Recurso " +
+                    $"'{recurso.Codigo}' " +
+                    $"modificado exitosamente."
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] No se pudo modificar el recurso: {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] No se pudo " +
+                    $"modificar el recurso: " +
+                    $"{ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void CambiarEstadoRecurso()
+        private static void
+            CambiarEstadoRecurso()
         {
-            if (!sesion.TienePermiso(RolUsuario.Administrador))
+            if (!sesion.TienePermiso(
+                RolUsuario.Administrador))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Solo los Administradores pueden cambiar manualmente el estado de los recursos.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Solo los " +
+                    "Administradores pueden " +
+                    "cambiar manualmente el estado " +
+                    "de los recursos."
+                );
+
                 Console.ResetColor();
+
                 Pausar();
                 return;
             }
 
             LimpiarConsola();
-            MostrarTitulo("=== CAMBIAR ESTADO DE RECURSO ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== CAMBIAR ESTADO DE RECURSO ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                string codigo = LeerTextoObligatorio("Código del recurso (ej. EST-003): ", 20);
-                var recurso = recursoRepo.ObtenerPorCodigo(codigo);
+                string codigo =
+                    LeerTextoObligatorio(
+                        "Código del recurso " +
+                        "(ej. EST-003): ",
+                        20
+                    );
+
+                var recurso =
+                    recursoRepo
+                        .ObtenerPorCodigo(
+                            codigo
+                        );
 
                 if (recurso == null)
                 {
-                    Console.WriteLine("Recurso no encontrado.");
+                    Console.WriteLine(
+                        "Recurso no encontrado."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                Console.WriteLine($"\nRecurso seleccionado: {recurso}");
-                Console.WriteLine($"Estado actual: {recurso.Estado}");
-                Console.WriteLine("\nEstados permitidos para cambio manual:");
-                Console.WriteLine("  0. Disponible");
-                Console.WriteLine("  2. Mantenimiento");
-                Console.WriteLine("  (Presione ESC para cancelar)");
-                Console.WriteLine("  (Nota: 'Asignado' solo es asignado automáticamente por el sistema al vincular el recurso a una misión)");
+                Console.WriteLine(
+                    $"\nRecurso seleccionado: " +
+                    $"{recurso}"
+                );
+
+                Console.WriteLine(
+                    $"Estado actual: " +
+                    $"{recurso.Estado}"
+                );
+
+                Console.WriteLine(
+                    "\nEstados permitidos " +
+                    "para cambio manual:"
+                );
+
+                Console.WriteLine(
+                    "  0. Disponible"
+                );
+
+                Console.WriteLine(
+                    "  2. Mantenimiento"
+                );
+
+                Console.WriteLine(
+                    "  (Presione ESC para cancelar)"
+                );
+
+                Console.WriteLine(
+                    "  (Nota: 'Asignado' solo es " +
+                    "asignado automáticamente por " +
+                    "el sistema al vincular el " +
+                    "recurso a una misión)"
+                );
 
                 EstadoRecurso nuevoEstado;
+
                 while (true)
                 {
-                    string entrada = LeerEntrada("\nSeleccione nuevo estado (0 para Disponible, 2 para Mantenimiento, o ESC para cancelar): ");
+                    string entrada =
+                        LeerEntrada(
+                            "\nSeleccione nuevo estado " +
+                            "(0 para Disponible, " +
+                            "2 para Mantenimiento, " +
+                            "o ESC para cancelar): "
+                        );
 
                     if (entrada == null)
+                    {
                         return;
+                    }
 
                     if (entrada == "0")
                     {
-                        nuevoEstado = EstadoRecurso.Disponible;
+                        nuevoEstado =
+                            EstadoRecurso
+                                .Disponible;
+
                         break;
                     }
+
                     if (entrada == "2")
                     {
-                        nuevoEstado = EstadoRecurso.Mantenimiento;
+                        nuevoEstado =
+                            EstadoRecurso
+                                .Mantenimiento;
+
                         break;
                     }
+
                     if (entrada == "1")
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("[ERROR] El estado 'Asignado' no puede asignarse manualmente; se asigna automáticamente al vincular el recurso a una misión.");
+                        Console.ForegroundColor =
+                            ConsoleColor.Red;
+
+                        Console.WriteLine(
+                            "[ERROR] El estado " +
+                            "'Asignado' no puede " +
+                            "asignarse manualmente; " +
+                            "se asigna automáticamente " +
+                            "al vincular el recurso " +
+                            "a una misión."
+                        );
+
                         Console.ResetColor();
+
                         continue;
                     }
 
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("[ERROR] Opción inválida. Ingrese 0 para Disponible, 2 para Mantenimiento, o presione ESC para cancelar.");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        "[ERROR] Opción inválida. " +
+                        "Ingrese 0 para Disponible, " +
+                        "2 para Mantenimiento, " +
+                        "o presione ESC para cancelar."
+                    );
+
                     Console.ResetColor();
                 }
 
-                recursoRepo.CambiarEstado(recurso.Id, nuevoEstado);
+                recursoRepo.CambiarEstado(
+                    recurso.Id,
+                    nuevoEstado
+                );
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Estado del recurso '{recurso.Codigo}' actualizado a: {nuevoEstado}");
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Estado del recurso " +
+                    $"'{recurso.Codigo}' " +
+                    $"actualizado a: {nuevoEstado}"
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
-            catch (InvalidOperationException ioex)
+            catch (
+                InvalidOperationException ioex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[RESTRICCIÓN DE NEGOCIO] {ioex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[RESTRICCIÓN DE NEGOCIO] " +
+                    $"{ioex.Message}"
+                );
+
                 Console.ResetColor();
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
@@ -1497,13 +3299,23 @@ namespace ORBITAL
 
         #region Módulo de Gestión de Usuarios
 
-        private static void GestionUsuarios()
+        private static void
+            GestionUsuarios()
         {
-            if (!sesion.TienePermiso(RolUsuario.Administrador))
+            if (!sesion.TienePermiso(
+                RolUsuario.Administrador))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[DENEGADO] Solo los Administradores tienen acceso a la gestión de usuarios.");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    "[DENEGADO] Solo los " +
+                    "Administradores tienen acceso " +
+                    "a la gestión de usuarios."
+                );
+
                 Console.ResetColor();
+
                 Pausar();
                 return;
             }
@@ -1511,18 +3323,29 @@ namespace ORBITAL
             while (true)
             {
                 LimpiarConsola();
-                MostrarTitulo("=== GESTIÓN DE USUARIOS DEL SISTEMA ===", ConsoleColor.Yellow);
+
+                MostrarTitulo(
+                    "=== GESTIÓN DE USUARIOS DEL SISTEMA ===",
+                    ConsoleColor.Yellow
+                );
+
                 MostrarMenuEnMarco(
                     "",
                     ConsoleColor.Magenta,
+
                     "1. Consultar todos los usuarios",
                     "2. Registrar nuevo usuario",
                     "3. Cambiar estado de un usuario (Activar / Desactivar)",
                     "0. Volver al menú principal (o presione ESC)"
                 );
 
-                string op = LeerEntradaEstilizada("\nSeleccione una opción: ");
-                if (op == null || op == "0")
+                string op =
+                    LeerEntradaEstilizada(
+                        "\nSeleccione una opción: "
+                    );
+
+                if (op == null ||
+                    op == "0")
                 {
                     return;
                 }
@@ -1532,159 +3355,337 @@ namespace ORBITAL
                     case "1":
                         ListarUsuarios();
                         break;
+
                     case "2":
                         RegistrarNuevoUsuario();
                         break;
+
                     case "3":
                         CambiarEstadoUsuario();
                         break;
+
                     default:
-                        Console.WriteLine("Opción no válida.");
+                        Console.WriteLine(
+                            "Opción no válida."
+                        );
+
                         Pausar();
                         break;
                 }
             }
         }
 
-        private static void ListarUsuarios()
+        private static void
+            ListarUsuarios()
         {
             LimpiarConsola();
-            MostrarTitulo("=== USUARIOS REGISTRADOS EN EL SISTEMA ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== USUARIOS REGISTRADOS EN EL SISTEMA ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                var usuarios = usuarioRepo.ObtenerTodos();
+                var usuarios =
+                    usuarioRepo.ObtenerTodos();
+
                 if (usuarios.Count == 0)
                 {
-                    Console.WriteLine("No hay usuarios registrados.");
+                    Console.WriteLine(
+                        "No hay usuarios registrados."
+                    );
                 }
                 else
                 {
-                    foreach (var u in usuarios)
+                    foreach (
+                        var u in usuarios)
                     {
-                        Console.WriteLine($"  * [ID: {u.Id}] {u}");
+                        Console.WriteLine(
+                            $"  * [ID: {u.Id}] {u}"
+                        );
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Error al consultar usuarios: {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"Error al consultar " +
+                    $"usuarios: {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void RegistrarNuevoUsuario()
+        private static void
+            RegistrarNuevoUsuario()
         {
             LimpiarConsola();
-            MostrarTitulo("=== REGISTRAR NUEVO USUARIO ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== REGISTRAR NUEVO USUARIO ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                string nombreUsuario = LeerTextoObligatorio("Nombre de usuario (login, máx 50 caracteres): ", 50);
+                string nombreUsuario =
+                    LeerTextoObligatorio(
+                        "Nombre de usuario " +
+                        "(login, máx 50 caracteres): ",
+                        50
+                    );
 
-                var existente = usuarioRepo.ObtenerPorNombreUsuario(nombreUsuario);
+                var existente =
+                    usuarioRepo
+                        .ObtenerPorNombreUsuario(
+                            nombreUsuario
+                        );
+
                 if (existente != null)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[ERROR] Ya existe un usuario registrado con el nombre '{nombreUsuario}'.");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        $"[ERROR] Ya existe un " +
+                        $"usuario registrado con " +
+                        $"el nombre '{nombreUsuario}'."
+                    );
+
                     Console.ResetColor();
+
                     Pausar();
                     return;
                 }
 
-                string contrasena = LeerTextoObligatorio("Contraseña (máx 100 caracteres): ", 100);
-                RolUsuario rol = LeerRolUsuario();
+                string contrasena =
+                    LeerTextoObligatorio(
+                        "Contraseña " +
+                        "(máx 100 caracteres): ",
+                        100
+                    );
 
-                var nuevoUsuario = new Usuario(nombreUsuario, contrasena, rol);
-                usuarioRepo.Registrar(nuevoUsuario);
+                RolUsuario rol =
+                    LeerRolUsuario();
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Usuario '{nuevoUsuario.NombreUsuario}' registrado como {nuevoUsuario.Rol} con estado Activo.");
+                var nuevoUsuario =
+                    new Usuario(
+                        nombreUsuario,
+                        contrasena,
+                        rol
+                    );
+
+                usuarioRepo.Registrar(
+                    nuevoUsuario
+                );
+
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Usuario " +
+                    $"'{nuevoUsuario.NombreUsuario}' " +
+                    $"registrado como " +
+                    $"{nuevoUsuario.Rol} con " +
+                    $"estado Activo."
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] No se pudo registrar el usuario: {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] No se pudo " +
+                    $"registrar el usuario: " +
+                    $"{ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
             Pausar();
         }
 
-        private static void CambiarEstadoUsuario()
+        private static void
+            CambiarEstadoUsuario()
         {
             LimpiarConsola();
-            MostrarTitulo("=== CAMBIAR ESTADO DE USUARIO ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== CAMBIAR ESTADO DE USUARIO ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                var usuarios = usuarioRepo.ObtenerTodos();
-                foreach (var u in usuarios)
+                var usuarios =
+                    usuarioRepo.ObtenerTodos();
+
+                foreach (
+                    var u in usuarios)
                 {
-                    Console.WriteLine($"  * [ID: {u.Id}] {u.NombreUsuario} | Rol: {u.Rol} | Estado: {u.Estado}");
+                    Console.WriteLine(
+                        $"  * [ID: {u.Id}] " +
+                        $"{u.NombreUsuario} | " +
+                        $"Rol: {u.Rol} | " +
+                        $"Estado: {u.Estado}"
+                    );
                 }
 
-                int idUsuario = LeerEnteroPositivo("\nIngrese el ID del usuario cuyo estado desea cambiar: ");
-                var usuario = usuarioRepo.ObtenerPorId(idUsuario);
+                int idUsuario =
+                    LeerEnteroPositivo(
+                        "\nIngrese el ID del " +
+                        "usuario cuyo estado " +
+                        "desea cambiar: "
+                    );
+
+                var usuario =
+                    usuarioRepo.ObtenerPorId(
+                        idUsuario
+                    );
 
                 if (usuario == null)
                 {
-                    Console.WriteLine("Usuario no encontrado.");
+                    Console.WriteLine(
+                        "Usuario no encontrado."
+                    );
+
                     Pausar();
                     return;
                 }
 
-                // Regla de seguridad: un usuario no puede desactivar su propia cuenta activa
-                Usuario actual = sesion.ObtenerUsuarioActual();
-                if (usuario.Id == actual.Id)
+                Usuario actual =
+                    sesion
+                        .ObtenerUsuarioActual();
+
+                if (usuario.Id ==
+                    actual.Id)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("[DENEGADO] Por motivos de seguridad del sistema, no puede modificar el estado de su propio usuario activo.");
+                    Console.ForegroundColor =
+                        ConsoleColor.Red;
+
+                    Console.WriteLine(
+                        "[DENEGADO] Por motivos " +
+                        "de seguridad del sistema, " +
+                        "no puede modificar el " +
+                        "estado de su propio " +
+                        "usuario activo."
+                    );
+
                     Console.ResetColor();
+
                     Pausar();
                     return;
                 }
 
-                Console.WriteLine($"\nUsuario: {usuario.NombreUsuario} (Estado actual: {usuario.Estado})");
-                Console.WriteLine("Estados:");
-                Console.WriteLine("  0. Activo");
-                Console.WriteLine("  1. Inactivo");
-                Console.WriteLine("  (Presione ESC para cancelar)");
+                Console.WriteLine(
+                    $"\nUsuario: " +
+                    $"{usuario.NombreUsuario} " +
+                    $"(Estado actual: " +
+                    $"{usuario.Estado})"
+                );
+
+                Console.WriteLine(
+                    "Estados:"
+                );
+
+                Console.WriteLine(
+                    "  0. Activo"
+                );
+
+                Console.WriteLine(
+                    "  1. Inactivo"
+                );
+
+                Console.WriteLine(
+                    "  (Presione ESC para cancelar)"
+                );
 
                 EstadoUsuario nuevoEstado;
+
                 while (true)
                 {
-                    string op = LeerEntrada("Seleccione nuevo estado (0 o 1, o ESC para cancelar): ");
-                    if (op == null)
-                        return;
+                    string op =
+                        LeerEntrada(
+                            "Seleccione nuevo estado " +
+                            "(0 o 1, o ESC para cancelar): "
+                        );
 
-                    if (op == "0") { nuevoEstado = EstadoUsuario.Activo; break; }
-                    if (op == "1") { nuevoEstado = EstadoUsuario.Inactivo; break; }
-                    Console.WriteLine("Opción inválida. Ingrese 0 o 1, o presione ESC para cancelar.");
+                    if (op == null)
+                    {
+                        return;
+                    }
+
+                    if (op == "0")
+                    {
+                        nuevoEstado =
+                            EstadoUsuario.Activo;
+
+                        break;
+                    }
+
+                    if (op == "1")
+                    {
+                        nuevoEstado =
+                            EstadoUsuario.Inactivo;
+
+                        break;
+                    }
+
+                    Console.WriteLine(
+                        "Opción inválida. Ingrese " +
+                        "0 o 1, o presione ESC " +
+                        "para cancelar."
+                    );
                 }
 
-                usuarioRepo.CambiarEstado(usuario.Id, nuevoEstado);
+                usuarioRepo.CambiarEstado(
+                    usuario.Id,
+                    nuevoEstado
+                );
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n[ÉXITO] Estado del usuario '{usuario.NombreUsuario}' cambiado a: {nuevoEstado}");
+                Console.ForegroundColor =
+                    ConsoleColor.Green;
+
+                Console.WriteLine(
+                    $"\n[ÉXITO] Estado del usuario " +
+                    $"'{usuario.NombreUsuario}' " +
+                    $"cambiado a: {nuevoEstado}"
+                );
+
                 Console.ResetColor();
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[ERROR] No se pudo cambiar el estado del usuario: {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"\n[ERROR] No se pudo " +
+                    $"cambiar el estado del " +
+                    $"usuario: {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
@@ -1695,30 +3696,60 @@ namespace ORBITAL
 
         #region Auditoría de Asignaciones
 
-        private static void ListarAsignacionesActivas()
+        private static void
+            ListarAsignacionesActivas()
         {
             LimpiarConsola();
-            MostrarTitulo("=== ASIGNACIONES ACTIVAS (VISTA DE AUDITORÍA) ===", ConsoleColor.Yellow);
+
+            MostrarTitulo(
+                "=== ASIGNACIONES ACTIVAS (VISTA DE AUDITORÍA) ===",
+                ConsoleColor.Yellow
+            );
 
             try
             {
-                var asignaciones = asignacionRepo.ObtenerAsignacionesActivas();
+                var asignaciones =
+                    asignacionRepo
+                        .ObtenerAsignacionesActivas();
+
                 if (asignaciones.Count == 0)
                 {
-                    Console.WriteLine("No hay asignaciones activas en este momento.");
+                    Console.WriteLine(
+                        "No hay asignaciones " +
+                        "activas en este momento."
+                    );
                 }
                 else
                 {
-                    foreach (var a in asignaciones)
+                    foreach (
+                        var a in
+                            asignaciones)
                     {
-                        Console.WriteLine($"  * Misión: {a.codigo_mision} ({a.nombre_mision}) -> Recurso: {a.codigo_recurso} [{a.tipo_recurso} - {a.modelo_recurso}] desde {a.fecha_asignacion:yyyy-MM-dd HH:mm}");
+                        Console.WriteLine(
+                            $"  * Misión: " +
+                            $"{a.codigo_mision} " +
+                            $"({a.nombre_mision}) " +
+                            $"-> Recurso: " +
+                            $"{a.codigo_recurso} " +
+                            $"[{a.tipo_recurso} - " +
+                            $"{a.modelo_recurso}] " +
+                            $"desde " +
+                            $"{a.fecha_asignacion:yyyy-MM-dd HH:mm}"
+                        );
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Error al consultar asignaciones activas: {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"Error al consultar " +
+                    $"asignaciones activas: " +
+                    $"{ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
@@ -1729,68 +3760,225 @@ namespace ORBITAL
 
         #region Panel de Control ORBITA (Estadísticas)
 
-        private static void MostrarPanelDeControl()
+        private static void
+            MostrarPanelDeControl()
         {
             LimpiarConsola();
-            MostrarTitulo("PANEL DE CONTROL ORBITA - ESTADÍSTICAS", ConsoleColor.Cyan);
+
+            MostrarTitulo(
+                "PANEL DE CONTROL ORBITA - ESTADÍSTICAS",
+                ConsoleColor.Cyan
+            );
 
             try
             {
-                var misiones = misionRepo.ObtenerTodas();
-                var recursos = recursoRepo.ObtenerTodos();
+                var misiones =
+                    misionRepo.ObtenerTodas();
 
-                int totalMisiones = misiones.Count;
-                int planificadas = misiones.Count(m => m.Estado == EstadoMision.Planificada);
-                int enEjecucion = misiones.Count(m => m.Estado == EstadoMision.EnEjecucion);
-                int finalizadas = misiones.Count(m => m.Estado == EstadoMision.Finalizada);
-                int canceladas = misiones.Count(m => m.Estado == EstadoMision.Cancelada);
+                var recursos =
+                    recursoRepo.ObtenerTodos();
 
-                int disponibles = recursos.Count(r => r.Estado == EstadoRecurso.Disponible);
-                int asignados = recursos.Count(r => r.Estado == EstadoRecurso.Asignado);
-                int mantenimiento = recursos.Count(r => r.Estado == EstadoRecurso.Mantenimiento);
+                int totalMisiones =
+                    misiones.Count;
 
-                Console.WriteLine("\n[MISIONES]");
-                Console.WriteLine($"  * Cantidad total de misiones registradas : {totalMisiones}");
-                Console.WriteLine($"  * Misiones planificadas                  : {planificadas}");
-                Console.WriteLine($"  * Misiones actualmente en ejecución      : {enEjecucion}");
-                Console.WriteLine($"  * Misiones finalizadas                   : {finalizadas}");
-                Console.WriteLine($"  * Misiones canceladas                    : {canceladas}");
+                int planificadas =
+                    misiones.Count(
+                        m =>
+                            m.Estado ==
+                            EstadoMision.Planificada
+                    );
 
-                Console.WriteLine("\n[RECURSOS DE EXPLORACIÓN]");
-                Console.WriteLine($"  * Cantidad de recursos disponibles       : {disponibles}");
-                Console.WriteLine($"  * Cantidad de recursos asignados         : {asignados}");
-                Console.WriteLine($"  * Cantidad de recursos en mantenimiento  : {mantenimiento}");
-                Console.WriteLine($"  * Total de recursos registrados          : {recursos.Count}");
+                int enEjecucion =
+                    misiones.Count(
+                        m =>
+                            m.Estado ==
+                            EstadoMision.EnEjecucion
+                    );
 
-                Console.WriteLine("\n--------------------------------------------------------------------------------");
-                string respuesta = LeerEntrada("¿Desea consultar el costo estimado total de una misión específica? (s/n, o presione ESC para volver): ");
+                int finalizadas =
+                    misiones.Count(
+                        m =>
+                            m.Estado ==
+                            EstadoMision.Finalizada
+                    );
 
-                if (respuesta != null && (respuesta.Equals("s", StringComparison.OrdinalIgnoreCase) || respuesta.Equals("si", StringComparison.OrdinalIgnoreCase)))
+                int canceladas =
+                    misiones.Count(
+                        m =>
+                            m.Estado ==
+                            EstadoMision.Cancelada
+                    );
+
+                int disponibles =
+                    recursos.Count(
+                        r =>
+                            r.Estado ==
+                            EstadoRecurso.Disponible
+                    );
+
+                int asignados =
+                    recursos.Count(
+                        r =>
+                            r.Estado ==
+                            EstadoRecurso.Asignado
+                    );
+
+                int mantenimiento =
+                    recursos.Count(
+                        r =>
+                            r.Estado ==
+                            EstadoRecurso.Mantenimiento
+                    );
+
+                Console.WriteLine(
+                    "\n[MISIONES]"
+                );
+
+                Console.WriteLine(
+                    $"  * Cantidad total de " +
+                    $"misiones registradas : " +
+                    $"{totalMisiones}"
+                );
+
+                Console.WriteLine(
+                    $"  * Misiones planificadas " +
+                    $"                 : " +
+                    $"{planificadas}"
+                );
+
+                Console.WriteLine(
+                    $"  * Misiones actualmente " +
+                    $"en ejecución      : " +
+                    $"{enEjecucion}"
+                );
+
+                Console.WriteLine(
+                    $"  * Misiones finalizadas " +
+                    $"                  : " +
+                    $"{finalizadas}"
+                );
+
+                Console.WriteLine(
+                    $"  * Misiones canceladas " +
+                    $"                   : " +
+                    $"{canceladas}"
+                );
+
+                Console.WriteLine(
+                    "\n[RECURSOS DE EXPLORACIÓN]"
+                );
+
+                Console.WriteLine(
+                    $"  * Cantidad de recursos " +
+                    $"disponibles       : " +
+                    $"{disponibles}"
+                );
+
+                Console.WriteLine(
+                    $"  * Cantidad de recursos " +
+                    $"asignados         : " +
+                    $"{asignados}"
+                );
+
+                Console.WriteLine(
+                    $"  * Cantidad de recursos " +
+                    $"en mantenimiento  : " +
+                    $"{mantenimiento}"
+                );
+
+                Console.WriteLine(
+                    $"  * Total de recursos " +
+                    $"registrados          : " +
+                    $"{recursos.Count}"
+                );
+
+                Console.WriteLine(
+                    "\n--------------------------------------------------------------------------------"
+                );
+
+                string respuesta =
+                    LeerEntrada(
+                        "¿Desea consultar el costo " +
+                        "estimado total de una " +
+                        "misión específica? " +
+                        "(s/n, o presione ESC para volver): "
+                    );
+
+                if (respuesta != null &&
+                    (
+                        respuesta.Equals(
+                            "s",
+                            StringComparison
+                                .OrdinalIgnoreCase
+                        ) ||
+                        respuesta.Equals(
+                            "si",
+                            StringComparison
+                                .OrdinalIgnoreCase
+                        )
+                    ))
                 {
-                    string cod = LeerTextoObligatorio("Ingrese código de la misión: ", 20);
-                    var m = misiones.FirstOrDefault(x => x.Codigo.Equals(cod, StringComparison.OrdinalIgnoreCase));
+                    string cod =
+                        LeerTextoObligatorio(
+                            "Ingrese código de la misión: ",
+                            20
+                        );
+
+                    var m =
+                        misiones.FirstOrDefault(
+                            x =>
+                                x.Codigo.Equals(
+                                    cod,
+                                    StringComparison
+                                        .OrdinalIgnoreCase
+                                )
+                        );
+
                     if (m != null)
                     {
-                        decimal costo = m.CalcularCostoEstimado();
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"\n>> Misión '{m.Nombre}' [{m.Codigo}]");
-                        Console.WriteLine($">> Costo estimado total de operación: ${costo:N2}");
+                        decimal costo =
+                            m.CalcularCostoEstimado();
+
+                        Console.ForegroundColor =
+                            ConsoleColor.Green;
+
+                        Console.WriteLine(
+                            $"\n>> Misión " +
+                            $"'{m.Nombre}' " +
+                            $"[{m.Codigo}]"
+                        );
+
+                        Console.WriteLine(
+                            $">> Costo estimado " +
+                            $"total de operación: " +
+                            $"${costo:N2}"
+                        );
+
                         Console.ResetColor();
                     }
                     else
                     {
-                        Console.WriteLine("Misión no encontrada.");
+                        Console.WriteLine(
+                            "Misión no encontrada."
+                        );
                     }
                 }
             }
-            catch (OperationCanceledException)
+            catch (
+                OperationCanceledException)
             {
                 return;
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Error al generar panel de control: {ex.Message}");
+                Console.ForegroundColor =
+                    ConsoleColor.Red;
+
+                Console.WriteLine(
+                    $"Error al generar panel " +
+                    $"de control: {ex.Message}"
+                );
+
                 Console.ResetColor();
             }
 
@@ -1801,118 +3989,304 @@ namespace ORBITAL
 
         #region Estilo Visual de Consola
 
-        private const int AnchoInterfaz = 80;
+        private const int AnchoInterfaz =
+            80;
 
-        private static void DibujarBannerORBITA()
+        private static void
+            DibujarBannerORBITA()
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            Console.WriteLine("║        SISTEMA ORBITA CONTROL - CENTRO DE CONTROL DE MISIONES               ║");
-            Console.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+            Console.ForegroundColor =
+                ConsoleColor.Cyan;
+
+            Console.WriteLine(
+                "╔══════════════════════════════════════════════════════════════════════════════╗"
+            );
+
+            Console.WriteLine(
+                "║        SISTEMA ORBITA CONTROL - CENTRO DE CONTROL DE MISIONES               ║"
+            );
+
+            Console.WriteLine(
+                "╚══════════════════════════════════════════════════════════════════════════════╝"
+            );
+
             Console.ResetColor();
+
             Console.WriteLine();
         }
 
-        private static void MostrarBarraUsuario(Usuario actual)
+        private static void
+            MostrarBarraUsuario(
+                Usuario actual)
         {
-            // Mismo texto original, presentado con colores por segmento.
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write("  ORBITA CONTROL | Usuario: ");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(actual.NombreUsuario);
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write(" | Rol: ");
-            Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.Write(actual.Rol);
-            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.ForegroundColor =
+                ConsoleColor.DarkGray;
+
+            Console.Write(
+                "  ORBITA CONTROL | Usuario: "
+            );
+
+            Console.ForegroundColor =
+                ConsoleColor.White;
+
+            Console.Write(
+                actual.NombreUsuario
+            );
+
+            Console.ForegroundColor =
+                ConsoleColor.DarkGray;
+
+            Console.Write(
+                " | Rol: "
+            );
+
+            Console.ForegroundColor =
+                ConsoleColor.Magenta;
+
+            Console.Write(
+                actual.Rol
+            );
+
+            Console.ForegroundColor =
+                ConsoleColor.DarkGray;
+
             Console.WriteLine(" ");
+
             Console.ResetColor();
+
             Console.WriteLine();
         }
 
-        private static void MostrarTitulo(string titulo, ConsoleColor color)
+        private static void MostrarTitulo(
+            string titulo,
+            ConsoleColor color)
         {
-            int anchoInterior = AnchoInterfaz - 2;
-            string contenido = CentrarTexto(titulo, anchoInterior);
+            int anchoInterior =
+                AnchoInterfaz - 2;
 
-            Console.ForegroundColor = color;
-            Console.WriteLine("┌" + new string('─', anchoInterior) + "┐");
-            Console.WriteLine("│" + contenido + "│");
-            Console.WriteLine("└" + new string('─', anchoInterior) + "┘");
+            string contenido =
+                CentrarTexto(
+                    titulo,
+                    anchoInterior
+                );
+
+            Console.ForegroundColor =
+                color;
+
+            Console.WriteLine(
+                "┌" +
+                new string(
+                    '─',
+                    anchoInterior
+                ) +
+                "┐"
+            );
+
+            Console.WriteLine(
+                "│" +
+                contenido +
+                "│"
+            );
+
+            Console.WriteLine(
+                "└" +
+                new string(
+                    '─',
+                    anchoInterior
+                ) +
+                "┘"
+            );
+
             Console.ResetColor();
+
             Console.WriteLine();
         }
 
-        private static void MostrarMenuEnMarco(string titulo, ConsoleColor color, params string[] lineas)
+        private static void
+            MostrarMenuEnMarco(
+                string titulo,
+                ConsoleColor color,
+                params string[] lineas)
         {
-            int anchoInterior = AnchoInterfaz - 2;
+            int anchoInterior =
+                AnchoInterfaz - 2;
 
             Console.WriteLine();
-            Console.ForegroundColor = color;
-            Console.WriteLine("┌" + new string('─', anchoInterior) + "┐");
 
-            if (!string.IsNullOrEmpty(titulo))
+            Console.ForegroundColor =
+                color;
+
+            Console.WriteLine(
+                "┌" +
+                new string(
+                    '─',
+                    anchoInterior
+                ) +
+                "┐"
+            );
+
+            if (!string.IsNullOrEmpty(
+                titulo))
             {
-                Console.WriteLine("│" + CentrarTexto(titulo, anchoInterior) + "│");
-                Console.WriteLine("├" + new string('─', anchoInterior) + "┤");
+                Console.WriteLine(
+                    "│" +
+                    CentrarTexto(
+                        titulo,
+                        anchoInterior
+                    ) +
+                    "│"
+                );
+
+                Console.WriteLine(
+                    "├" +
+                    new string(
+                        '─',
+                        anchoInterior
+                    ) +
+                    "┤"
+                );
             }
 
-            foreach (string linea in lineas)
+            foreach (
+                string linea in lineas)
             {
-                if (linea.All(c => c == '-'))
+                if (linea.All(
+                    c => c == '-'))
                 {
-                    Console.ForegroundColor = color;
-                    Console.WriteLine("├" + new string('─', anchoInterior) + "┤");
+                    Console.ForegroundColor =
+                        color;
+
+                    Console.WriteLine(
+                        "├" +
+                        new string(
+                            '─',
+                            anchoInterior
+                        ) +
+                        "┤"
+                    );
+
                     continue;
                 }
 
-                // Las líneas que comienzan con @@ son subtítulos visuales de sección.
-                // El marcador no se muestra al usuario.
-                if (linea.StartsWith("@@ "))
+                if (linea.StartsWith(
+                    "@@ "))
                 {
-                    string subtitulo = linea.Substring(3);
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    string subtitulo =
+                        linea.Substring(3);
+
+                    Console.ForegroundColor =
+                        ConsoleColor.Yellow;
+
                     Console.Write("│");
-                    Console.Write(CentrarTexto(subtitulo, anchoInterior));
-                    Console.ForegroundColor = color;
+
+                    Console.Write(
+                        CentrarTexto(
+                            subtitulo,
+                            anchoInterior
+                        )
+                    );
+
+                    Console.ForegroundColor =
+                        color;
+
                     Console.WriteLine("│");
+
                     continue;
                 }
 
-                Console.ForegroundColor = color;
-                string contenido = "  " + linea;
-                if (contenido.Length > anchoInterior)
+                Console.ForegroundColor =
+                    color;
+
+                string contenido =
+                    "  " + linea;
+
+                if (contenido.Length >
+                    anchoInterior)
                 {
-                    contenido = contenido.Substring(0, anchoInterior);
+                    contenido =
+                        contenido.Substring(
+                            0,
+                            anchoInterior
+                        );
                 }
 
-                Console.WriteLine("│" + contenido.PadRight(anchoInterior) + "│");
+                Console.WriteLine(
+                    "│" +
+                    contenido.PadRight(
+                        anchoInterior
+                    ) +
+                    "│"
+                );
             }
 
-            Console.WriteLine("└" + new string('─', anchoInterior) + "┘");
+            Console.WriteLine(
+                "└" +
+                new string(
+                    '─',
+                    anchoInterior
+                ) +
+                "┘"
+            );
+
             Console.ResetColor();
         }
 
-        private static string CentrarTexto(string texto, int ancho)
+        private static string
+            CentrarTexto(
+                string texto,
+                int ancho)
         {
-            if (string.IsNullOrEmpty(texto))
-                return new string(' ', ancho);
+            if (string.IsNullOrEmpty(
+                texto))
+            {
+                return new string(
+                    ' ',
+                    ancho
+                );
+            }
 
             if (texto.Length >= ancho)
-                return texto.Substring(0, ancho);
+            {
+                return texto.Substring(
+                    0,
+                    ancho
+                );
+            }
 
-            int izquierda = (ancho - texto.Length) / 2;
-            int derecha = ancho - texto.Length - izquierda;
+            int izquierda =
+                (ancho - texto.Length) / 2;
 
-            return new string(' ', izquierda) + texto + new string(' ', derecha);
+            int derecha =
+                ancho -
+                texto.Length -
+                izquierda;
+
+            return
+                new string(
+                    ' ',
+                    izquierda
+                ) +
+                texto +
+                new string(
+                    ' ',
+                    derecha
+                );
         }
 
-        private static string LeerEntradaEstilizada(string prompt = "")
+        private static string
+            LeerEntradaEstilizada(
+                string prompt = "")
         {
-            if (!string.IsNullOrEmpty(prompt))
+            if (!string.IsNullOrEmpty(
+                prompt))
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("  ► ");
+                Console.ForegroundColor =
+                    ConsoleColor.Yellow;
+
+                Console.Write(
+                    "  ► "
+                );
+
                 Console.ResetColor();
             }
 
@@ -1924,24 +4298,45 @@ namespace ORBITAL
         private static void Pausar()
         {
             Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("  Presione cualquier tecla para continuar (o presione ESC para volver)...");
+
+            Console.ForegroundColor =
+                ConsoleColor.DarkGray;
+
+            Console.WriteLine(
+                "  Presione cualquier tecla " +
+                "para continuar " +
+                "(o presione ESC para volver)..."
+            );
+
             Console.ResetColor();
 
-            while (Console.KeyAvailable) { Console.ReadKey(true); }
+            while (Console.KeyAvailable)
+            {
+                Console.ReadKey(true);
+            }
+
             Console.ReadKey(true);
-            while (Console.KeyAvailable) { Console.ReadKey(true); }
+
+            while (Console.KeyAvailable)
+            {
+                Console.ReadKey(true);
+            }
         }
 
-        private static void LimpiarConsola()
+        private static void
+            LimpiarConsola()
         {
             try
             {
                 Console.Clear();
-                Console.Write("\x1b[3J\x1b[H\x1b[2J");
+
+                Console.Write(
+                    "\x1b[3J\x1b[H\x1b[2J"
+                );
             }
             catch
-            { }
+            {
+            }
         }
     }
 }
