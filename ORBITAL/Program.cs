@@ -41,18 +41,20 @@ namespace ORBITAL
         private static void MostrarPantallaLogin()
         {
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("================================================================================");
-            Console.WriteLine("        SISTEMA ORBITA CONTROL - CENTRO DE CONTROL DE MISIONES                 ");
-            Console.WriteLine("================================================================================");
-            Console.ResetColor();
-            Console.WriteLine("\nCredenciales de acceso predeterminadas:");
-            Console.WriteLine("  * Administrador : admin_orbita       / Admin123");
-            Console.WriteLine("  * Coordinador   : coordinador_orbita / Coord123");
-            Console.WriteLine("  * Auditor       : auditor_orbita     / Audit123");
-            Console.WriteLine("--------------------------------------------------------------------------------");
+            DibujarBannerORBITA();
+            MostrarMenuEnMarco(
+                "Credenciales de acceso predeterminadas:",
+                ConsoleColor.Magenta,
+                "  * Administrador : admin_orbita       / Admin123",
+                "  * Coordinador   : coordinador_orbita / Coord123",
+                "  * Auditor       : auditor_orbita     / Audit123"
+            );
 
-            Console.Write("\nIngrese nombre de usuario (o '0' / ESC para salir): ");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("  ► ");
+            Console.ResetColor();
+            Console.Write("Ingrese nombre de usuario (o '0' / ESC para salir): ");
             string usuario = LeerEntrada();
 
             if (usuario == null || usuario == "0")
@@ -60,6 +62,9 @@ namespace ORBITAL
                 Environment.Exit(0);
             }
 
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("  ► ");
+            Console.ResetColor();
             Console.Write("Ingrese contraseña (o ESC para volver): ");
             string contrasena = LeerContrasenaOculta();
             if (contrasena == null)
@@ -132,11 +137,8 @@ namespace ORBITAL
             Usuario actual = sesion.ObtenerUsuarioActual();
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("================================================================================");
-            Console.WriteLine($"  ORBITA CONTROL | Usuario: {actual.NombreUsuario} | Rol: {actual.Rol} ");
-            Console.WriteLine("================================================================================");
-            Console.ResetColor();
+            DibujarBannerORBITA();
+            MostrarBarraUsuario(actual);
 
             switch (actual.Rol)
             {
@@ -154,28 +156,36 @@ namespace ORBITAL
 
         private static void MenuAdministrador()
         {
-            Console.WriteLine("\n--- MÓDULO ADMINISTRADOR (ACCESO TOTAL) ---");
-            Console.WriteLine("1.  Consultar todas las misiones");
-            Console.WriteLine("2.  Crear nueva misión");
-            Console.WriteLine("3.  Modificar datos de una misión");
-            Console.WriteLine("4.  Asignar recurso a misión");
-            Console.WriteLine("5.  Retirar recurso de misión");
-            Console.WriteLine("6.  Iniciar misión (Protocolo de Seguridad ORBITA)");
-            Console.WriteLine("7.  Finalizar misión");
-            Console.WriteLine("8.  Cancelar misión");
-            Console.WriteLine("9.  Calcular costo estimado de operación de una misión");
-            Console.WriteLine("----------------------------------------------------------------");
-            Console.WriteLine("10. Consultar todos los recursos");
-            Console.WriteLine("11. Consultar recursos disponibles");
-            Console.WriteLine("12. Registrar nuevo recurso (Dron, Rover, Estación)");
-            Console.WriteLine("13. Modificar datos de un recurso");
-            Console.WriteLine("14. Cambiar estado de un recurso");
-            Console.WriteLine("----------------------------------------------------------------");
-            Console.WriteLine("15. Gestión de usuarios (Consultar, Registrar, Cambiar Estado)");
-            Console.WriteLine("16. Panel de Control ORBITA (Estadísticas)");
-            Console.WriteLine("0.  Cerrar sesión (o presione ESC)");
+            MostrarMenuEnMarco(
+                "--- MÓDULO ADMINISTRADOR (ACCESO TOTAL) ---",
+                ConsoleColor.Cyan,
+                "@@ GESTIÓN DE MISIONES",
+                "1.  Consultar todas las misiones",
+                "2.  Crear nueva misión",
+                "3.  Modificar datos de una misión",
+                "4.  Asignar recurso a misión",
+                "5.  Retirar recurso de misión",
+                "6.  Iniciar misión (Protocolo de Seguridad ORBITA)",
+                "7.  Finalizar misión",
+                "8.  Cancelar misión",
+                "9.  Calcular costo estimado de operación de una misión",
+                "----------------------------------------------------------------",
+                "@@ GESTIÓN DE RECURSOS",
+                "10. Consultar todos los recursos",
+                "11. Consultar recursos disponibles",
+                "12. Registrar nuevo recurso (Dron, Rover, Estación)",
+                "13. Modificar datos de un recurso",
+                "14. Cambiar estado de un recurso",
+                "----------------------------------------------------------------",
+                "@@ ADMINISTRACIÓN Y CONTROL",
+                "15. Gestión de usuarios (Consultar, Registrar, Cambiar Estado)",
+                "16. Panel de Control ORBITA (Estadísticas)",
+                "----------------------------------------------------------------",
+                "@@ SESIÓN",
+                "0.  Cerrar sesión (o presione ESC)"
+            );
 
-            string opcion = LeerEntrada("\nSeleccione una opción: ");
+            string opcion = LeerEntradaEstilizada("\nSeleccione una opción: ");
             if (opcion == null || opcion == "0")
             {
                 sesion.CerrarSesion();
@@ -209,21 +219,28 @@ namespace ORBITAL
 
         private static void MenuCoordinador()
         {
-            Console.WriteLine("\n--- MÓDULO COORDINADOR (GESTIÓN DE MISIONES Y RECURSOS) ---");
-            Console.WriteLine("1.  Consultar misiones");
-            Console.WriteLine("2.  Crear nueva misión");
-            Console.WriteLine("3.  Modificar datos de una misión");
-            Console.WriteLine("4.  Asignar recurso a misión");
-            Console.WriteLine("5.  Retirar recurso de misión");
-            Console.WriteLine("6.  Iniciar misión (Protocolo de Seguridad ORBITA)");
-            Console.WriteLine("7.  Finalizar misión");
-            Console.WriteLine("8.  Calcular costo estimado de operación de una misión");
-            Console.WriteLine("----------------------------------------------------------------");
-            Console.WriteLine("9.  Consultar recursos disponibles");
-            Console.WriteLine("10. Panel de Control ORBITA");
-            Console.WriteLine("0.  Cerrar sesión (o presione ESC)");
+            MostrarMenuEnMarco(
+                "--- MÓDULO COORDINADOR (GESTIÓN DE MISIONES Y RECURSOS) ---",
+                ConsoleColor.Cyan,
+                "@@ GESTIÓN DE MISIONES",
+                "1.  Consultar misiones",
+                "2.  Crear nueva misión",
+                "3.  Modificar datos de una misión",
+                "4.  Asignar recurso a misión",
+                "5.  Retirar recurso de misión",
+                "6.  Iniciar misión (Protocolo de Seguridad ORBITA)",
+                "7.  Finalizar misión",
+                "8.  Calcular costo estimado de operación de una misión",
+                "----------------------------------------------------------------",
+                "@@ RECURSOS Y CONTROL",
+                "9.  Consultar recursos disponibles",
+                "10. Panel de Control ORBITA",
+                "----------------------------------------------------------------",
+                "@@ SESIÓN",
+                "0.  Cerrar sesión (o presione ESC)"
+            );
 
-            string opcion = LeerEntrada("\nSeleccione una opción: ");
+            string opcion = LeerEntradaEstilizada("\nSeleccione una opción: ");
             if (opcion == null || opcion == "0")
             {
                 sesion.CerrarSesion();
@@ -251,15 +268,23 @@ namespace ORBITAL
 
         private static void MenuAuditor()
         {
-            Console.WriteLine("\n--- MÓDULO AUDITOR (SOLO LECTURA / CONSULTAS) ---");
-            Console.WriteLine("1. Consultar todas las misiones");
-            Console.WriteLine("2. Consultar todos los recursos");
-            Console.WriteLine("3. Consultar recursos disponibles");
-            Console.WriteLine("4. Consultar asignaciones activas (Vista auditoría)");
-            Console.WriteLine("5. Panel de Control ORBITA");
-            Console.WriteLine("0. Cerrar sesión (o presione ESC)");
+            MostrarMenuEnMarco(
+                "--- MÓDULO AUDITOR (SOLO LECTURA / CONSULTAS) ---",
+                ConsoleColor.Cyan,
+                "@@ CONSULTAS GENERALES",
+                "1. Consultar todas las misiones",
+                "2. Consultar todos los recursos",
+                "3. Consultar recursos disponibles",
+                "----------------------------------------------------------------",
+                "@@ AUDITORÍA Y CONTROL",
+                "4. Consultar asignaciones activas (Vista auditoría)",
+                "5. Panel de Control ORBITA",
+                "----------------------------------------------------------------",
+                "@@ SESIÓN",
+                "0. Cerrar sesión (o presione ESC)"
+            );
 
-            string opcion = LeerEntrada("\nSeleccione una opción: ");
+            string opcion = LeerEntradaEstilizada("\nSeleccione una opción: ");
             if (opcion == null || opcion == "0")
             {
                 sesion.CerrarSesion();
@@ -543,9 +568,7 @@ namespace ORBITAL
         private static void ListarMisiones()
         {
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== LISTADO DE MISIONES REGISTRADAS ===");
-            Console.ResetColor();
+            MostrarTitulo("=== LISTADO DE MISIONES REGISTRADAS ===", ConsoleColor.Yellow);
 
             try
             {
@@ -609,9 +632,7 @@ namespace ORBITAL
             }
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== CREAR NUEVA MISIÓN ===");
-            Console.ResetColor();
+            MostrarTitulo("=== CREAR NUEVA MISIÓN ===", ConsoleColor.Yellow);
 
             try
             {
@@ -673,9 +694,7 @@ namespace ORBITAL
             }
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== MODIFICAR DATOS DE UNA MISIÓN ===");
-            Console.ResetColor();
+            MostrarTitulo("=== MODIFICAR DATOS DE UNA MISIÓN ===", ConsoleColor.Yellow);
 
             try
             {
@@ -753,9 +772,7 @@ namespace ORBITAL
             }
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== ASIGNAR RECURSO A MISIÓN ===");
-            Console.ResetColor();
+            MostrarTitulo("=== ASIGNAR RECURSO A MISIÓN ===", ConsoleColor.Yellow);
 
             try
             {
@@ -867,9 +884,7 @@ namespace ORBITAL
             }
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== RETIRAR RECURSO DE MISIÓN ===");
-            Console.ResetColor();
+            MostrarTitulo("=== RETIRAR RECURSO DE MISIÓN ===", ConsoleColor.Yellow);
 
             try
             {
@@ -950,9 +965,7 @@ namespace ORBITAL
             }
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== INICIAR MISIÓN - PROTOCOLO DE SEGURIDAD ORBITA ===");
-            Console.ResetColor();
+            MostrarTitulo("=== INICIAR MISIÓN - PROTOCOLO DE SEGURIDAD ORBITA ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1014,9 +1027,7 @@ namespace ORBITAL
             }
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== FINALIZAR MISIÓN ===");
-            Console.ResetColor();
+            MostrarTitulo("=== FINALIZAR MISIÓN ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1072,9 +1083,7 @@ namespace ORBITAL
             }
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== CANCELAR MISIÓN ===");
-            Console.ResetColor();
+            MostrarTitulo("=== CANCELAR MISIÓN ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1127,9 +1136,7 @@ namespace ORBITAL
         private static void CalcularCostoMision()
         {
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== CÁLCULO POLIMÓRFICO DE COSTO ESTIMADO DE MISIÓN ===");
-            Console.ResetColor();
+            MostrarTitulo("=== CÁLCULO DE COSTO ESTIMADO DE MISIÓN ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1244,9 +1251,7 @@ namespace ORBITAL
             }
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== REGISTRAR NUEVO RECURSO DE EXPLORACIÓN ===");
-            Console.ResetColor();
+            MostrarTitulo("=== REGISTRAR NUEVO RECURSO DE EXPLORACIÓN ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1335,9 +1340,7 @@ namespace ORBITAL
             }
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== MODIFICAR DATOS DE UN RECURSO DE EXPLORACIÓN ===");
-            Console.ResetColor();
+            MostrarTitulo("=== MODIFICAR DATOS DE UN RECURSO DE EXPLORACIÓN ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1411,9 +1414,7 @@ namespace ORBITAL
             }
 
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== CAMBIAR ESTADO DE RECURSO ===");
-            Console.ResetColor();
+            MostrarTitulo("=== CAMBIAR ESTADO DE RECURSO ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1510,15 +1511,17 @@ namespace ORBITAL
             while (true)
             {
                 LimpiarConsola();
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("=== GESTIÓN DE USUARIOS DEL SISTEMA ===");
-                Console.ResetColor();
-                Console.WriteLine("1. Consultar todos los usuarios");
-                Console.WriteLine("2. Registrar nuevo usuario");
-                Console.WriteLine("3. Cambiar estado de un usuario (Activar / Desactivar)");
-                Console.WriteLine("0. Volver al menú principal (o presione ESC)");
+                MostrarTitulo("=== GESTIÓN DE USUARIOS DEL SISTEMA ===", ConsoleColor.Yellow);
+                MostrarMenuEnMarco(
+                    "",
+                    ConsoleColor.Magenta,
+                    "1. Consultar todos los usuarios",
+                    "2. Registrar nuevo usuario",
+                    "3. Cambiar estado de un usuario (Activar / Desactivar)",
+                    "0. Volver al menú principal (o presione ESC)"
+                );
 
-                string op = LeerEntrada("\nSeleccione una opción: ");
+                string op = LeerEntradaEstilizada("\nSeleccione una opción: ");
                 if (op == null || op == "0")
                 {
                     return;
@@ -1546,9 +1549,7 @@ namespace ORBITAL
         private static void ListarUsuarios()
         {
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== USUARIOS REGISTRADOS EN EL SISTEMA ===");
-            Console.ResetColor();
+            MostrarTitulo("=== USUARIOS REGISTRADOS EN EL SISTEMA ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1578,9 +1579,7 @@ namespace ORBITAL
         private static void RegistrarNuevoUsuario()
         {
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== REGISTRAR NUEVO USUARIO ===");
-            Console.ResetColor();
+            MostrarTitulo("=== REGISTRAR NUEVO USUARIO ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1623,9 +1622,7 @@ namespace ORBITAL
         private static void CambiarEstadoUsuario()
         {
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== CAMBIAR ESTADO DE USUARIO ===");
-            Console.ResetColor();
+            MostrarTitulo("=== CAMBIAR ESTADO DE USUARIO ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1701,9 +1698,7 @@ namespace ORBITAL
         private static void ListarAsignacionesActivas()
         {
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== ASIGNACIONES ACTIVAS (VISTA DE AUDITORÍA) ===");
-            Console.ResetColor();
+            MostrarTitulo("=== ASIGNACIONES ACTIVAS (VISTA DE AUDITORÍA) ===", ConsoleColor.Yellow);
 
             try
             {
@@ -1737,11 +1732,7 @@ namespace ORBITAL
         private static void MostrarPanelDeControl()
         {
             LimpiarConsola();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("================================================================================");
-            Console.WriteLine("                    PANEL DE CONTROL ORBITA - ESTADÍSTICAS                     ");
-            Console.WriteLine("================================================================================");
-            Console.ResetColor();
+            MostrarTitulo("PANEL DE CONTROL ORBITA - ESTADÍSTICAS", ConsoleColor.Cyan);
 
             try
             {
@@ -1808,9 +1799,135 @@ namespace ORBITAL
 
         #endregion
 
+        #region Estilo Visual de Consola
+
+        private const int AnchoInterfaz = 80;
+
+        private static void DibujarBannerORBITA()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
+            Console.WriteLine("║        SISTEMA ORBITA CONTROL - CENTRO DE CONTROL DE MISIONES               ║");
+            Console.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+
+        private static void MostrarBarraUsuario(Usuario actual)
+        {
+            // Mismo texto original, presentado con colores por segmento.
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("  ORBITA CONTROL | Usuario: ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(actual.NombreUsuario);
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write(" | Rol: ");
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.Write(actual.Rol);
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(" ");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+
+        private static void MostrarTitulo(string titulo, ConsoleColor color)
+        {
+            int anchoInterior = AnchoInterfaz - 2;
+            string contenido = CentrarTexto(titulo, anchoInterior);
+
+            Console.ForegroundColor = color;
+            Console.WriteLine("┌" + new string('─', anchoInterior) + "┐");
+            Console.WriteLine("│" + contenido + "│");
+            Console.WriteLine("└" + new string('─', anchoInterior) + "┘");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+
+        private static void MostrarMenuEnMarco(string titulo, ConsoleColor color, params string[] lineas)
+        {
+            int anchoInterior = AnchoInterfaz - 2;
+
+            Console.WriteLine();
+            Console.ForegroundColor = color;
+            Console.WriteLine("┌" + new string('─', anchoInterior) + "┐");
+
+            if (!string.IsNullOrEmpty(titulo))
+            {
+                Console.WriteLine("│" + CentrarTexto(titulo, anchoInterior) + "│");
+                Console.WriteLine("├" + new string('─', anchoInterior) + "┤");
+            }
+
+            foreach (string linea in lineas)
+            {
+                if (linea.All(c => c == '-'))
+                {
+                    Console.ForegroundColor = color;
+                    Console.WriteLine("├" + new string('─', anchoInterior) + "┤");
+                    continue;
+                }
+
+                // Las líneas que comienzan con @@ son subtítulos visuales de sección.
+                // El marcador no se muestra al usuario.
+                if (linea.StartsWith("@@ "))
+                {
+                    string subtitulo = linea.Substring(3);
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write("│");
+                    Console.Write(CentrarTexto(subtitulo, anchoInterior));
+                    Console.ForegroundColor = color;
+                    Console.WriteLine("│");
+                    continue;
+                }
+
+                Console.ForegroundColor = color;
+                string contenido = "  " + linea;
+                if (contenido.Length > anchoInterior)
+                {
+                    contenido = contenido.Substring(0, anchoInterior);
+                }
+
+                Console.WriteLine("│" + contenido.PadRight(anchoInterior) + "│");
+            }
+
+            Console.WriteLine("└" + new string('─', anchoInterior) + "┘");
+            Console.ResetColor();
+        }
+
+        private static string CentrarTexto(string texto, int ancho)
+        {
+            if (string.IsNullOrEmpty(texto))
+                return new string(' ', ancho);
+
+            if (texto.Length >= ancho)
+                return texto.Substring(0, ancho);
+
+            int izquierda = (ancho - texto.Length) / 2;
+            int derecha = ancho - texto.Length - izquierda;
+
+            return new string(' ', izquierda) + texto + new string(' ', derecha);
+        }
+
+        private static string LeerEntradaEstilizada(string prompt = "")
+        {
+            if (!string.IsNullOrEmpty(prompt))
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("  ► ");
+                Console.ResetColor();
+            }
+
+            return LeerEntrada(prompt);
+        }
+
+        #endregion
+
         private static void Pausar()
         {
-            Console.WriteLine("\nPresione cualquier tecla para continuar (o presione ESC para volver)...");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine("  Presione cualquier tecla para continuar (o presione ESC para volver)...");
+            Console.ResetColor();
+
             while (Console.KeyAvailable) { Console.ReadKey(true); }
             Console.ReadKey(true);
             while (Console.KeyAvailable) { Console.ReadKey(true); }
@@ -1824,7 +1941,7 @@ namespace ORBITAL
                 Console.Write("\x1b[3J\x1b[H\x1b[2J");
             }
             catch
-            {}
+            { }
         }
     }
 }
