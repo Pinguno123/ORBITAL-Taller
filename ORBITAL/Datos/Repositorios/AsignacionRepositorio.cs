@@ -11,54 +11,115 @@ namespace ORBITAL.Datos.Repositorios
 {
     public class AsignacionRepositorio
     {
-        public void RegistrarAsignacion(int misionId, int recursoId, decimal cantidadOperacion = 1)
+        public void RegistrarAsignacion(
+            int misionId,
+            int recursoId,
+            decimal cantidadOperacion = 1)
         {
-            using (var db = new orbita_controlEntities())
+            if (cantidadOperacion <= 0)
             {
-                var efRecurso = db.recurso_exploracion.Find(recursoId);
+                throw new ArgumentOutOfRangeException(
+                    nameof(cantidadOperacion),
+                    "La cantidad de operación debe ser mayor que cero."
+                );
+            }
+
+            using (var db =
+                new orbita_controlEntities())
+            {
+                var efRecurso =
+                    db.recurso_exploracion.Find(
+                        recursoId
+                    );
+
                 if (efRecurso == null)
-                    throw new InvalidOperationException($"No se encontró el recurso con Id {recursoId}.");
-
-                if (efRecurso.estado != (byte)EstadoRecurso.Disponible)
-                    throw new RecursoNoDisponibleException($"El recurso {efRecurso.codigo} no está disponible (Estado: {(EstadoRecurso)efRecurso.estado}).");
-
-                var efMision = db.mision.Find(misionId);
-                if (efMision == null)
-                    throw new InvalidOperationException($"No se encontró la misión con Id {misionId}.");
-
-                var asignacion = new asignacion_recurso
                 {
-                    mision_id = misionId,
-                    recurso_id = recursoId,
-                    fecha_asignacion = DateTime.Now,
-                    fecha_liberacion = null,
-                    activa = true,
-                    cantidad_operacion = cantidadOperacion > 0 ? cantidadOperacion : 1
-                };
+                    throw new InvalidOperationException(
+                        $"No se encontró el recurso " +
+                        $"con Id {recursoId}."
+                    );
+                }
 
-                db.asignacion_recurso.Add(asignacion);
-                efRecurso.estado = (byte)EstadoRecurso.Asignado;
+                if (efRecurso.estado !=
+                    (byte)EstadoRecurso.Disponible)
+                {
+                    throw new
+                        RecursoNoDisponibleException(
+                            $"El recurso " +
+                            $"{efRecurso.codigo} no está " +
+                            $"disponible (Estado: " +
+                            $"{(EstadoRecurso)efRecurso.estado})."
+                        );
+                }
+
+                var efMision =
+                    db.mision.Find(misionId);
+
+                if (efMision == null)
+                {
+                    throw new InvalidOperationException(
+                        $"No se encontró la misión " +
+                        $"con Id {misionId}."
+                    );
+                }
+
+                var asignacion =
+                    new asignacion_recurso
+                    {
+                        mision_id = misionId,
+                        recurso_id = recursoId,
+                        fecha_asignacion =
+                            DateTime.Now,
+                        fecha_liberacion = null,
+                        activa = true,
+                        cantidad_operacion =
+                            cantidadOperacion
+                    };
+
+                db.asignacion_recurso.Add(
+                    asignacion
+                );
+
+                efRecurso.estado =
+                    (byte)EstadoRecurso.Asignado;
 
                 db.SaveChanges();
             }
         }
 
-        public void LiberarRecursoDeMision(int misionId, int recursoId)
+        public void LiberarRecursoDeMision(
+            int misionId,
+            int recursoId)
         {
-            using (var db = new orbita_controlEntities())
+            using (var db =
+                new orbita_controlEntities())
             {
-                var asignacion = db.asignacion_recurso
-                    .FirstOrDefault(a => a.mision_id == misionId && a.recurso_id == recursoId && a.activa);
+                var asignacion =
+                    db.asignacion_recurso
+                        .FirstOrDefault(
+                            a =>
+                                a.mision_id ==
+                                    misionId &&
+                                a.recurso_id ==
+                                    recursoId &&
+                                a.activa
+                        );
 
                 if (asignacion != null)
                 {
                     asignacion.activa = false;
-                    asignacion.fecha_liberacion = DateTime.Now;
+                    asignacion.fecha_liberacion =
+                        DateTime.Now;
 
-                    var recurso = db.recurso_exploracion.Find(recursoId);
+                    var recurso =
+                        db.recurso_exploracion
+                            .Find(recursoId);
+
                     if (recurso != null)
                     {
-                        recurso.estado = (byte)EstadoRecurso.Disponible;
+                        recurso.estado =
+                            (byte)
+                            EstadoRecurso.Disponible;
                     }
 
                     db.SaveChanges();
@@ -66,24 +127,38 @@ namespace ORBITAL.Datos.Repositorios
             }
         }
 
-        public void LiberarTodasDeMision(int misionId)
+        public void LiberarTodasDeMision(
+            int misionId)
         {
-            using (var db = new orbita_controlEntities())
+            using (var db =
+                new orbita_controlEntities())
             {
-                var asignaciones = db.asignacion_recurso
-                    .Where(a => a.mision_id == misionId && a.activa)
-                    .ToList();
+                var asignaciones =
+                    db.asignacion_recurso
+                        .Where(
+                            a =>
+                                a.mision_id ==
+                                    misionId &&
+                                a.activa
+                        )
+                        .ToList();
 
                 DateTime ahora = DateTime.Now;
+
                 foreach (var asig in asignaciones)
                 {
                     asig.activa = false;
                     asig.fecha_liberacion = ahora;
 
-                    var recurso = db.recurso_exploracion.Find(asig.recurso_id);
+                    var recurso =
+                        db.recurso_exploracion
+                            .Find(asig.recurso_id);
+
                     if (recurso != null)
                     {
-                        recurso.estado = (byte)EstadoRecurso.Disponible;
+                        recurso.estado =
+                            (byte)
+                            EstadoRecurso.Disponible;
                     }
                 }
 
@@ -91,22 +166,34 @@ namespace ORBITAL.Datos.Repositorios
             }
         }
 
-        public List<vw_asignaciones_activas> ObtenerAsignacionesActivas()
+        public List<vw_asignaciones_activas>
+            ObtenerAsignacionesActivas()
         {
-            using (var db = new orbita_controlEntities())
+            using (var db =
+                new orbita_controlEntities())
             {
-                return db.vw_asignaciones_activas.AsNoTracking().ToList();
+                return
+                    db.vw_asignaciones_activas
+                        .AsNoTracking()
+                        .ToList();
             }
         }
 
-        public List<asignacion_recurso> ObtenerPorMision(int misionId)
+        public List<asignacion_recurso>
+            ObtenerPorMision(int misionId)
         {
-            using (var db = new orbita_controlEntities())
+            using (var db =
+                new orbita_controlEntities())
             {
-                return db.asignacion_recurso
-                    .AsNoTracking()
-                    .Where(a => a.mision_id == misionId)
-                    .ToList();
+                return
+                    db.asignacion_recurso
+                        .AsNoTracking()
+                        .Where(
+                            a =>
+                                a.mision_id ==
+                                misionId
+                        )
+                        .ToList();
             }
         }
     }
