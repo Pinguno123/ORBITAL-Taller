@@ -24,7 +24,21 @@ namespace ORBITAL.Dominio.Entidades
         public DateTime FechaAsignacion { get => fechaAsignacion; set => fechaAsignacion = value; }
         public DateTime? FechaLiberacion { get => fechaLiberacion; set => fechaLiberacion = value; }
         public bool Activa { get => activa; set => activa = value; }
-        public decimal CantidadOperacion { get => cantidadOperacion; set => cantidadOperacion = value; }
+
+        public decimal CantidadOperacion
+        {
+            get => cantidadOperacion;
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException(
+                        nameof(CantidadOperacion),
+                        "La cantidad de operación debe ser mayor que cero."
+                    );
+
+                cantidadOperacion = value;
+            }
+        }
 
         // Constructores
         public AsignacionRecurso(Mision mision, RecursoExploracion recurso)
@@ -32,7 +46,10 @@ namespace ORBITAL.Dominio.Entidades
         {
         }
 
-        public AsignacionRecurso(Mision mision, RecursoExploracion recurso, decimal cantidadOperacion)
+        public AsignacionRecurso(
+            Mision mision,
+            RecursoExploracion recurso,
+            decimal cantidadOperacion)
         {
             if (mision == null)
                 throw new ArgumentNullException(nameof(mision));
@@ -40,9 +57,15 @@ namespace ORBITAL.Dominio.Entidades
             if (recurso == null)
                 throw new ArgumentNullException(nameof(recurso));
 
+            if (cantidadOperacion <= 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(cantidadOperacion),
+                    "La cantidad de operación debe ser mayor que cero."
+                );
+
             this.mision = mision;
             this.recurso = recurso;
-            this.cantidadOperacion = cantidadOperacion > 0 ? cantidadOperacion : 1;
+            this.cantidadOperacion = cantidadOperacion;
             this.fechaAsignacion = DateTime.Now;
             this.fechaLiberacion = null;
             this.activa = true;
@@ -51,15 +74,28 @@ namespace ORBITAL.Dominio.Entidades
             recurso.Asignar(mision);
         }
 
-        public AsignacionRecurso(int id, Mision mision, RecursoExploracion recurso, DateTime fechaAsignacion, DateTime? fechaLiberacion, bool activa, decimal cantidadOperacion = 1)
+        public AsignacionRecurso(
+            int id,
+            Mision mision,
+            RecursoExploracion recurso,
+            DateTime fechaAsignacion,
+            DateTime? fechaLiberacion,
+            bool activa,
+            decimal cantidadOperacion = 1)
         {
+            if (cantidadOperacion <= 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(cantidadOperacion),
+                    "La cantidad de operación debe ser mayor que cero."
+                );
+
             this.id = id;
             this.mision = mision;
             this.recurso = recurso;
             this.fechaAsignacion = fechaAsignacion;
             this.fechaLiberacion = fechaLiberacion;
             this.activa = activa;
-            this.cantidadOperacion = cantidadOperacion > 0 ? cantidadOperacion : 1;
+            this.cantidadOperacion = cantidadOperacion;
         }
 
         // Métodos
@@ -68,7 +104,9 @@ namespace ORBITAL.Dominio.Entidades
             if (this.recurso == null)
                 return 0;
 
-            return this.recurso.CalcularCostoOperacion(this.cantidadOperacion);
+            return this.recurso.CalcularCostoOperacion(
+                this.cantidadOperacion
+            );
         }
 
         public void Liberar()
@@ -78,6 +116,7 @@ namespace ORBITAL.Dominio.Entidades
 
             this.activa = false;
             this.fechaLiberacion = DateTime.Now;
+
             if (this.recurso != null)
             {
                 this.recurso.Liberar();
@@ -91,7 +130,8 @@ namespace ORBITAL.Dominio.Entidades
 
         public override string ToString()
         {
-            return $"{Mision.Codigo} - {Recurso.Codigo} (Uso: {cantidadOperacion}) - Activa: {activa}";
+            return $"{Mision.Codigo} - {Recurso.Codigo} " +
+                   $"(Uso: {cantidadOperacion}) - Activa: {activa}";
         }
     }
 }
