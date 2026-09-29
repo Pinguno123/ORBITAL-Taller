@@ -444,10 +444,10 @@ namespace ORBITAL
 
                 if (DateTime.TryParseExact(entrada, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fecha))
                 {
-                    if (fechaMinima.HasValue && fecha <= fechaMinima.Value)
+                    if (fechaMinima.HasValue && fecha < fechaMinima.Value)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"[ERROR] La fecha debe ser posterior a la fecha de inicio ({fechaMinima.Value:yyyy-MM-dd}).");
+                        Console.WriteLine($"[ERROR] La fecha no puede ser anterior a la fecha de inicio ({fechaMinima.Value:yyyy-MM-dd}).");
                         Console.ResetColor();
                         continue;
                     }

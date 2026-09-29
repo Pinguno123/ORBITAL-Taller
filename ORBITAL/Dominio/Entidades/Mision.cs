@@ -210,9 +210,9 @@ namespace ORBITAL.Dominio.Entidades
             if (string.IsNullOrWhiteSpace(descripcion))
                 throw new MisionInvalidaException("Protocolo de seguridad ORBITA: La descripción de la misión es obligatoria.");
 
-            // 2. Fecha final > fecha inicial
-            if (fechaFinEstimada <= fechaInicio)
-                throw new MisionInvalidaException("Protocolo de seguridad ORBITA: La fecha de finalización estimada debe ser posterior a la fecha de inicio.");
+            // 2. Fecha final >= fecha inicial (no puede ser anterior a la fecha de inicio)
+            if (fechaFinEstimada < fechaInicio)
+                throw new MisionInvalidaException("Protocolo de seguridad ORBITA: La fecha de finalización estimada no puede ser anterior a la fecha de inicio.");
 
             // 3. Responsable activo
             if (responsable == null)
